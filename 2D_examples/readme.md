@@ -30,8 +30,34 @@ In this section, a list of usable functions for matlab will be displayed.
 | Automatically adjust contrast (gray scale image)  | ```gsAdj = imadjust(gs);```  |
 | Automatically adjust contrast (color scaled)  | ```I2adj = imlocalbrighten(I2);```  |
 
-%Image viewer app:
-imtool
+## Threshold and binary extraction
+| Action  | Matlab code | Notes |
+| ------------- | ------------- | ------------- |
+| Threshold 255/2  | ```BW = gsAdj > 255/2```  |
+| Select threshold automatically   | ```BW = imbinarize(gsAdj);```  | Threshold is global |
+| Select threshold automatically   | ```BWadapt = imbinarize(gsAdj, "adaptive");```  | Threshold is different for each region<br />Assumed foreground light and background dark |
+| Select threshold automatically   | ```BWadapt = imbinarize(gsAdj,"adaptive","ForegroundPolarity","dark");```  | When foreground of interest is dark |
+
+# Average Filtering
+| Action  | Matlab code | Notes |
+| ------------- | ------------- | ------------- |
+| Create 3 by 3 average filter  | ```H = fspecial("average",3);```  |
+| Apply filter  | ```gssmooth = imfilter(gs,H);```  | Default setting of imfilter sets pixels outside the image to zero |
+| Apply filter  | ```gssmooth = imfilter(gs,H,"replicate");```  |  the "replicate" option uses pixel intensity values on the image border for pixels outside the image |
+
+<!--
+# Morphological operations
+| Action  | Matlab code | Notes |
+| ------------- | ------------- | ------------- |
+| T  | ``` ```  |
+| T  | ``` ```  |
+| T  | ``` ```  |
+| T  | ``` ```  |
+| T  | ``` ```  |
+| T  | ``` ```  |
+| T  | ``` ```  |
+| T  | ``` ```  |
+-->
 
 
 
