@@ -3,6 +3,9 @@
 # MATLAB COMMANDS FOR 2D VISION
 In this section, a list of usable functions for matlab will be displayed.
 
+### To search
+```xcorr2```
+
 ## Reading and Writing image files
 
 | Action  | Matlab code |
@@ -62,8 +65,32 @@ BW = imbinarize(gs,"adaptive","ForegroundPolarity","dark");
 | Remove Background  | ```gsSub = Ibg - gs;```  |
 | Invert black and white  | ```BWsub = ~imbinarize(gsSub);```  |
 | Create a square Structuring Element  | ```SE = strel("rectangle",[3 25]);```  | height=3 pixels and width=25 pixels |
-| Mostrar histograma   | ``` ```  |
+| Mostrar histograma   | ``````S = sum(BWstripes,2);plot(S);``````  |
+
+# Datastore
+| Action  | Matlab code | Notes |
+| ------------- | ------------- | ------------- |
+| Create image datastore  | ```ds = imageDatastore("testimages");```  | Create databse for a folder named testimages |
+| Count number of files in db  | ```nFiles = numel(ds.Files);```  |
+| Read _n_th image of db  | ```I = readimage(ds,n);```  |
 | T  | ``` ```  |
+| T  | ``` ```  |
+| T  | ``` ```  |
+| T  | ``` ```  |
+
+Filtering DB image: 
+```matlab
+ds = imageDatastore("testimages");
+nFiles = numel(ds.Files);
+isReceipt = false(1,nFiles);
+for k=1:nFiles
+    I = readimage(ds,k);
+    isReceipt(k) = classifyImage(I);
+end
+receiptFiles = ds.Files(isReceipt);
+montage(receiptFiles);
+```
+
 <!--
 | Action  | Matlab code | Notes |
 | ------------- | ------------- | ------------- |
