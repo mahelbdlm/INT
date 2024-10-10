@@ -45,8 +45,26 @@ In this section, a list of usable functions for matlab will be displayed.
 | Apply filter  | ```gssmooth = imfilter(gs,H);```  | Default setting of imfilter sets pixels outside the image to zero |
 | Apply filter  | ```gssmooth = imfilter(gs,H,"replicate");```  |  the "replicate" option uses pixel intensity values on the image border for pixels outside the image |
 
+# Remove background of image
+```matlab
+I = imread("IMG_001.jpg");
+gs = im2gray(I);
+gs = imadjust(gs);
+H = fspecial("average",3);
+gs = imfilter(gs,H,"replicate");
+BW = imbinarize(gs,"adaptive","ForegroundPolarity","dark");
+```
+| Action  | Matlab code | Notes |
+| ------------- | ------------- | ------------- |
+| Create Structuring Element  | ```SE = strel("disk",8);```  | Disk with radius 8px |
+| Closing operation  | ```Ibg = imclose(gs,SE);```  | Emphasize White | 
+| Open Image  | ```BWstripes = imopen(BW,SE);```  | Emphasize Dark text |
+| Remove Background  | ```gsSub = Ibg - gs;```  |
+| Invert black and white  | ```BWsub = ~imbinarize(gsSub);```  |
+| Create a square Structuring Element  | ```SE = strel("rectangle",[3 25]);```  | height=3 pixels and width=25 pixels |
+| Mostrar histograma   | ``` ```  |
+| T  | ``` ```  |
 <!--
-# Morphological operations
 | Action  | Matlab code | Notes |
 | ------------- | ------------- | ------------- |
 | T  | ``` ```  |
