@@ -73,10 +73,6 @@ BW = imbinarize(gs,"adaptive","ForegroundPolarity","dark");
 | Create image datastore  | ```ds = imageDatastore("testimages");```  | Create databse for a folder named testimages |
 | Count number of files in db  | ```nFiles = numel(ds.Files);```  |
 | Read _n_th image of db  | ```I = readimage(ds,n);```  |
-| T  | ``` ```  |
-| T  | ``` ```  |
-| T  | ``` ```  |
-| T  | ``` ```  |
 
 Filtering DB image: 
 ```matlab
