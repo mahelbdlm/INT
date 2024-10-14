@@ -1,6 +1,6 @@
 % Import video file and work with it
-%vid_color= load("video_color.mat");
-%vid_depth= load("video_depth.mat");
+vid_color= load("video_color.mat");
+vid_depth= load("video_depth.mat");
 
 imageArr=[];
 imgindex=1;
@@ -14,3 +14,5 @@ for i=1:10:150
 end
 
 montage(imageArr,'Size', [round(imgindex/numberImagesHorizontal)-1, numberImagesHorizontal]);
+
+%imwrite(imageArr{imgindex-2}, "palet1_color.png");
