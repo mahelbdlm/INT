@@ -61,8 +61,7 @@ BW = imbinarize(gs,"adaptive","ForegroundPolarity","dark");
 | Action  | Matlab code | Notes |
 | ------------- | ------------- | ------------- |
 | Create Structuring Element  | ```SE = strel("disk",8);```  | Disk with radius 8px |
-| Closing operation  | ```Ibg = imclose(gs,SE);```  | Emphasize White | 
-| Opening operation  | ```Ibg = imopen(gs,SE);```  | Emphasize Black | 
+| Closing operation  | ```Ibg = imclose(gs,SE);```  | Emphasize White |
 | Open Image  | ```BWstripes = imopen(BW,SE);```  | Emphasize Dark text |
 | Remove Background  | ```gsSub = Ibg - gs;```  |
 | Invert black and white  | ```BWsub = ~imbinarize(gsSub);```  |
