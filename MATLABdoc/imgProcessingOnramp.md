@@ -6,6 +6,7 @@ In this section, a list of usable functions for matlab will be displayed.
 ### To search
 ```xcorr2```
 
+
 ## Reading and Writing image files
 
 | Action  | Matlab code |
@@ -66,6 +67,9 @@ BW = imbinarize(gs,"adaptive","ForegroundPolarity","dark");
 | Invert black and white  | ```BWsub = ~imbinarize(gsSub);```  |
 | Create a square Structuring Element  | ```SE = strel("rectangle",[3 25]);```  | height=3 pixels and width=25 pixels |
 | Mostrar histograma   | ``````S = sum(BWstripes,2);plot(S);``````  |
+
+To do all this but faster:
+```BW = imbothat(gs, SE)```
 
 # Datastore
 | Action  | Matlab code | Notes |
