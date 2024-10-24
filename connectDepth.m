@@ -6,6 +6,8 @@ function pipeline=connectDepth(varargin)
             HEIGHT          =480  ;            %// Defines the number of lines for each frame or zero for auto resolve  //
             FPS            = 30   ;            %// Defines the rate of frames per second
         case 1
+            WIDTH          = 640   ;           %// Defines the number of columns for each frame or zero for auto resolve//
+            HEIGHT          =480  ;            %// Defines the number of lines for each frame or zero for auto resolve  //
             FPS=varargin{1};
         case 3
             FPS=varargin{1};
@@ -23,6 +25,9 @@ function pipeline=connectDepth(varargin)
 %     // The returned object should be released with rs2_delete_device_list(...)
     device_list = query_devices(ctx);
     dev_count = length(device_list);
+    if dev_count==0
+        error('Seems like there are no connected devices!');
+    end
     fprintf("There are %d connected RealSense devices.\n", dev_count);
 
 %     // Get the first connected device
