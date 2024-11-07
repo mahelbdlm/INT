@@ -1,0 +1,56 @@
+close all;
+clear;
+afficher = 1;
+path = "mahel/detect_object/";
+
+%Connect with default configuration
+pipeline=connectDepth();
+
+%Enable pointcloud
+pointcloud = realsense.pointcloud();
+
+% Discard first frames...
+fs = pipeline.wait_for_frames();
+% Use colorizer to color the depth data
+colorizer=realsense.colorizer();
+
+fs = pipeline.wait_for_frames();
+depth = fs.get_depth_frame();  
+height = depth.get_height();
+width=depth.get_width();
+
+% % %Query the distance from the camera to the object in the center of the image
+depth_frame=permute(reshape(colorizer.colorize(depth).get_data()',[3,width,height]),[3 2 1]);
+if afficher==1
+  imshow(depth_frame,[])
+end
+imwrite(depth_frame,path+"palet.jpg");
+
+if (depth.logical())% && color.logical())
+   %pointcloud.map_to(color);
+   points = pointcloud.calculate(depth);
+   % Adjust frame CS to matlab CS
+   vertices = points.get_vertices();
+   X = vertices(:,1,1);
+   Y = vertices(:,2,1);
+   Z = vertices(:,3,1);
+
+   if afficher==1
+    figure('visible','on');  hold on;
+    figure('units','normalized','outerposition',[0 0 1 1])
+    plot3(X,Z,-Y,'.');
+    grid on
+    hold off;
+    view([45 30]);
+
+    xlim([-0.5 0.5])
+    ylim([0.3 1])
+    zlim([-0.5 0.5])
+
+    xlabel('X');
+    ylabel('Z');
+    zlabel('Y');
+   end
+
+  saveToPLY(path,X,Y,Z);
+end
