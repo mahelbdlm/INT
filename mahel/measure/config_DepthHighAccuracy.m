@@ -1,34 +1,8 @@
-% This function configurates the realsense camera
-% INPUT: Variable number of inputs (see readme for more info)
-% OUTPUT: output.pipeline and output.profile
-% Last modification: 09/11/2024 11:57
-
-function [pipeline, profile]=connectDepth(varargin)
-    switch nargin
-        case 0
-            %default values
-            highAccuracy    = 0;
+clear;
+highAccuracy    = 1;
             WIDTH          = 640   ;           %// Defines the number of columns for each frame or zero for auto resolve//
             HEIGHT          =480  ;            %// Defines the number of lines for each frame or zero for auto resolve  //
             FPS            = 30   ;            %// Defines the rate of frames per second
-        case 1
-            highAccuracy    = varargin{1};
-            FPS            = 30   ;  
-            WIDTH          = 640   ;           %// Defines the number of columns for each frame or zero for auto resolve//
-            HEIGHT          =480  ;            %// Defines the number of lines for each frame or zero for auto resolve  //
-        case 2
-            highAccuracy    = varargin{1};
-            FPS=varargin{2};
-            WIDTH          = 640   ;           %// Defines the number of columns for each frame or zero for auto resolve//
-            HEIGHT          =480  ;            %// Defines the number of lines for each frame or zero for auto resolve  //
-        case 4
-            highAccuracy    = varargin{1};
-            FPS=varargin{2};
-            WIDTH=varargin{3};
-            HEIGHT=varargin{4};
-        case others
-            error('Arguments(none, fps, fps width height)...');
-    end
             
 %     // Create a context object. This object owns the handles to all connected realsense devices.
 %     // The returned object should be released with rs2_delete_context(...)
@@ -70,7 +44,7 @@ function [pipeline, profile]=connectDepth(varargin)
         % Get the depth sensor and set the preset to high accuracy
         device = profile.get_device();
         sensors = device.query_sensors();
-        %name = sensors{1}{2}.get_info(realsense.camera_info.name);
+        sname = sensors{1}{2}.get_info(realsense.camera_info.name);
         fprintf("Available sensors: \n");
         for i=1:length(sensors{1})
             fprintf("  -%s\n", sensors{1}{i}.get_info(realsense.camera_info.name))
@@ -84,7 +58,8 @@ function [pipeline, profile]=connectDepth(varargin)
         % 3: High Accuracy
 
         %Set the RGB sensor to fixed exposure
-        %sensors{1}{2}.set_option(realsense.option.enable_auto_exposure,0);
-        %sensors{1}{2}.set_option(realsense.option.exposure,500);
+        sensors{1}{2}.set_option(realsense.option.enable_auto_exposure,0);
+        sensors{1}{2}.set_option(realsense.option.exposure,500);
     end
-end
+
+    pipeline.stop();
