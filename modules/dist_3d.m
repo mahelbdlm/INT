@@ -1,3 +1,5 @@
+% Last updated: 09/11/2024 18:05
+
 % Function to compute Euclidean distance between two 3D points
 function dist = dist_3d(intrinsics, frame, u, v)
    % Convert pixels to 3D points
