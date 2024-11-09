@@ -1,8 +1,8 @@
 % Function to compute Euclidean distance between two 3D points
 function dist = dist_3d(intrinsics, frame, u, v)
    % Convert pixels to 3D points
-    upixel = u;
-    vpixel = v;
+    upixel = round(u/2);
+    vpixel = round(v/2);
 
     % Convert the frame to depth frame
     depthFrame3D = frame.as('depth_frame');
