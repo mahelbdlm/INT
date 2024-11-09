@@ -10,7 +10,7 @@ Upon execution, it opens a new figure and waits for the user to left-click on th
 
 <details>
 
-<summary>Usage example</summary>
+<summary>USAGE EXAMPLE</summary>
 
 ### Usage example
 <div align="center">
@@ -23,6 +23,23 @@ The following configuration was used:
 </div>
 
 > [!WARNING]
-> The distance shown can be incorrect due to distorsion
+> The distance shown can be incorrect due to distorsion from vision angle of the camera
+
+
+Example using a roud bin:
+<div align="center">
+    <img height="60%" width="60%" alt="Image from matlab" src="/../main/mahel/img/img3.png?raw=true">
+</div>
+The camera shows correctly the distance changing due to the round nature of the object.
+
 
 </details>
+
+## select_2_pixel.m
+This code allows to calculate a distance using the depth camera between 2 points, selecting them on the plot.
+
+> [!CAUTION]
+> This code does not work for now.
+
+## config_DepthHighAccuracy
+This code is a copy of [connectDepth.m](/../main/modules/connectDepth.m) configuring high-precision mode for the depth sensor. It was used in order to test some variables, but is now deprecated.
