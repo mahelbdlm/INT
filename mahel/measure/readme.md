@@ -8,6 +8,10 @@ Upon execution, it opens a new figure and waits for the user to left-click on th
 > [!NOTE]
 > You can load the next frame right-clicking or pressing the right arrow button
 
+<details>
+
+<summary>Usage example</summary>
+
 ### Usage example
 <div align="center">
     <img height="60%" width="60%" alt="Image from matlab" src="/../main/mahel/img/img1.png?raw=true">
@@ -20,3 +24,5 @@ The following configuration was used:
 
 > [!WARNING]
 > The distance shown can be incorrect due to distorsion
+
+</details>
