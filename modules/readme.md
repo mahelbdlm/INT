@@ -5,7 +5,7 @@ Below is detailed the purpose of each file.
 ## connectDepth
 This file connects the relasense camera and returns a pipe.
 This function is customizable, using variable number of inputs (varargin, nargin).
-For more information on varargin, visit [matlab site](https://mathworks.com/help/matlab/ref/varargin.html)
+For more information on varargin, visit [matlab site](https://mathworks.com/help/matlab/ref/varargin.html) or ask a fellow student.
 
 ```pipe=connectDepth(a,b,c,d);```
 | Variable  | Description |

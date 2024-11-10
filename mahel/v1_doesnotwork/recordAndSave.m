@@ -29,7 +29,7 @@ video_depth.distance = distanceToPalet;
 video_depth.distance = distanceToPalet;
 
 
-for i = 1:fps*5 %5 seconds!!!
+for i = 1:fps*1 %5 seconds!!!
     %Obtain frames from a streaming device
     fs = pipe.wait_for_frames();
     depth=fs.get_depth_frame();

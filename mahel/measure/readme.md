@@ -41,5 +41,13 @@ This code allows to calculate a distance using the depth camera between 2 points
 > [!CAUTION]
 > This code does not work for now.
 
+## depth_stream_video
+This code streams from the camera in both depth and rgb image and shows them in a montage. 
+
+> [!CAUTION]
+> This code does not work for now.
+
 ## config_DepthHighAccuracy
-This code is a copy of [connectDepth.m](/../main/modules/connectDepth.m) configuring high-precision mode for the depth sensor. It was used in order to test some variables, but is now deprecated.
+This code is a copy of [connectDepth.m](/../main/modules/connectDepth.m) configuring high-precision mode for the depth sensor.
+Please use [connectDepth.m](/../main/modules/connectDepth.m) with the right parameters instead.
+Information about connectDepth and its parameters: [connectDepth.m](/../main/modules/readme.md)
