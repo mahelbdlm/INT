@@ -84,7 +84,15 @@ try
             width = depth.get_width();
             depth_frame_colorized = permute(reshape(colorizer.colorize(depth).get_data()', [3, width, height]), [3, 2, 1]);
             
-            imshowpair(depth_frame_colorized,color_img,"montage");
+            %Treat the colorized image
+            img_color = color.get_data();
+            height_color = color.get_height();
+            width_color = depth.get_width();
+            img_color_show = permute(reshape(color.get_data(), [3, width_color, height_color]), [3, 2, 1]);
+
+            imshow(color_img);
+            %imshowpair(depth_frame_colorized,color_img,"montage");
+            return;
             
         end
         pause(0.1);
@@ -94,7 +102,9 @@ catch error
     % Error handling
     if error.identifier == "MATLAB:UndefinedFunction"
         if contains(error.message, 'connectDepth') || contains(error.message, 'dist_3d')
-            fprintf(2, "You must add the modules folder to the MATLAB path\n  => Right-click on module folder -> add to path -> Selected folder\n");
+            fprintf(2, "The modules folder was not added to your matlab path.\nIt has now been added, you just need to rerun the code.\n");
+            addpath('modules');
+            %addpath(genpath('modules')) %Add Folder and Its Subfolders to Search Path
         else
             rethrow(error);
         end
