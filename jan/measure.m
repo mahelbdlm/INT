@@ -1,4 +1,5 @@
-function [dist12]=measure(P1,P2,I)
+%Measuring distances between two points P1 and P2
+function [dist12]=measure(P1,P2,I) %Pn are cells {wpos,hpos}
     width=640;height=480;
     I=double(I);
     [wpos1,hpos1]=P1{:};
