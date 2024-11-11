@@ -1,5 +1,7 @@
-% Measure real-world depth data and allow pixel selection for distance measurement
-% Last modification: 09/11/2024 18:05
+% This code streams from the camera in both depth and rgb image and shows them in a montage. 
+% It allows a better visualization of both what the depth camera sees and what the rgb camera sees.
+% Note that the RGB data is reshaped to correspond to the sizes of the depth image, and would in reality be much more detailed.
+% Last modification: 11/11/2024 12:25
 
 clear f;
 close all;
@@ -85,14 +87,21 @@ try
             depth_frame_colorized = permute(reshape(colorizer.colorize(depth).get_data()', [3, width, height]), [3, 2, 1]);
             
             %Treat the colorized image
-            img_color = color.get_data();
-            height_color = color.get_height();
-            width_color = depth.get_width();
-            img_color_show = permute(reshape(color.get_data(), [3, width_color, height_color]), [3, 2, 1]);
+            wc=color.get_width();
+            hc=color.get_height();
+            
+            color_data=color.get_data();
+            % Reshape color data as RGBA (4 channels) format
+            color_img_rgba = permute(reshape(color_data, [4, wc, hc]), [3, 2, 1]);
+            
+            % Discard the alpha channel to keep only RGB
+            color_img = color_img_rgba(:, :, 1:3);
+            
+            % Display the RGB image (debug)
+            %imshow(color_img);
+            color_img_resized = imresize(color_img, [480, 640]);
 
-            imshow(color_img);
-            %imshowpair(depth_frame_colorized,color_img,"montage");
-            return;
+            imshowpair(depth_frame_colorized,color_img_resized,"montage");
             
         end
         pause(0.1);
@@ -121,6 +130,6 @@ end
 % Callback function to stop the pipeline and close the window
 function close_window(~, ~)
     clear f;
-    disp('Window closed. Stopping the pipeline.');
+    disp('Window closed');
     delete(gcf);  % Close the GUI window
 end
