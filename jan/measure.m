@@ -6,9 +6,9 @@ function [dist12]=measure(P1,P2,I) %Pn are cells {wpos,hpos}
     [wpos2,hpos2]=P2{:};
     dist1=I(hpos1,wpos1);
     dist2=I(hpos2,wpos2);
-    B=50;%baseline = 50mm
-    HFOV=75*pi/180;
-    VFOV=62*pi/180;
+    B=50;%baseline = 50mm, distance between two cameras
+    HFOV=75*pi/180;%Horitzontal field of view
+    VFOV=62*pi/180;%Vertical field of view
     x1=-2*(wpos1-width/2)*(dist1*tan(HFOV/2)-B)/width;
     if(wpos1>=width/2)
         x1=-2*(wpos1-width/2)*(dist1*tan(HFOV/2))/width;
