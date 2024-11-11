@@ -1,6 +1,6 @@
 % Measure real-world depth data and allow pixel selection for distance measurement
 % Last modification: 09/11/2024 18:05
-
+% Based on https://dev.intelrealsense.com/docs/rs-measure
 clear f;
 close all;
 debug_mode = 0;
