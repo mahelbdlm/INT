@@ -35,19 +35,13 @@ The camera shows correctly the distance changing due to the round nature of the 
 
 </details>
 
+## depth_stream_video
+This code streams from the camera in both depth and rgb image and shows them in a montage. 
+It allows a better visualization of both what the depth camera sees and what the rgb camera sees.
+Note that the RGB data is reshaped to correspond to the sizes of the depth image, and would in reality be much more detailed.
+
 ## select_2_pixel.m
 This code allows to calculate a distance using the depth camera between 2 points, selecting them on the plot.
 
 > [!CAUTION]
 > This code does not work for now.
-
-## depth_stream_video
-This code streams from the camera in both depth and rgb image and shows them in a montage. 
-
-> [!CAUTION]
-> This code does not work for now.
-
-## config_DepthHighAccuracy
-This code is a copy of [connectDepth.m](/../main/modules/connectDepth.m) configuring high-precision mode for the depth sensor.
-Please use [connectDepth.m](/../main/modules/connectDepth.m) with the right parameters instead.
-Information about connectDepth and its parameters: [connectDepth.m](/../main/modules/readme.md)
