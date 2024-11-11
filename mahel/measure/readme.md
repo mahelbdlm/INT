@@ -23,10 +23,6 @@ The following configuration was used:
     <img height="60%" width="60%" alt="Realsense config" src="/../main/mahel/img/img2.JPEG?raw=true">
 </div>
 
-> [!WARNING]
-> The distance shown can be incorrect due to distorsion from vision angle of the camera
-
-
 Example using a roud bin:
 <div align="center">
     <img height="60%" width="60%" alt="Image from matlab" src="/../main/mahel/img/img3.png?raw=true">
