@@ -24,6 +24,15 @@ IBW=edge(I,'canny');
 [H,T,R]=hough(IBW);
 P  = houghpeaks(H,1,'threshold',ceil(0.3*max(H(:))));
 lines = houghlines(IBW,T,R,P,'FillGap',5,'MinLength',7);
+
+figure(10),imshow(I,[]),hold on
+xy = [lines(1).point1; lines(1).point2];
+plot(xy(:,1),xy(:,2),'LineWidth',2,'Color','green');
+% plot beginnings and ends of lines
+plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','yellow');
+plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','red');
+hold off;
+
 I=imrotate(I,90+lines(1).theta);
 if mod(lines(1).theta,90)-45<0
     hcrop=find(I(:,3)>0,1);
