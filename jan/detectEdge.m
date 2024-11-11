@@ -1,7 +1,7 @@
-% function detectEdge(img)
+function detectEdge(img)
 % close all;
-img=load("images7_11_24\imgdist3.mat");
-img=img.imgdist;
+% img=load("images7_11_24\imgdist3.mat");
+% img=img.imgdist;
 %% pipeline=connectDepth();
 % for i=1:5
 %     fs=pipeline.wait_for_frames();
@@ -25,9 +25,14 @@ IBW=edge(I,'canny');
 P  = houghpeaks(H,1,'threshold',ceil(0.3*max(H(:))));
 lines = houghlines(IBW,T,R,P,'FillGap',5,'MinLength',7);
 I=imrotate(I,90+lines(1).theta);
-% if lines1.theta
-hcrop=find(I(:,3)>0,1);
-wcrop=length(I(1,:))-find(I(3,end:-1:1)>0,1);
+if mod(lines(1).theta,90)-45<0
+    hcrop=find(I(:,3)>0,1);
+    wcrop=length(I(1,:))-find(I(3,end:-1:1)>0,1);
+end
+if mod(lines(1).theta,90)-45>0
+    hcrop=find(I(end:-1:1,3)>0,1);
+    wcrop=length(I(1,:))-find(I(3,:)>0,1);
+end
 I=I(hcrop:end-hcrop,end-wcrop:wcrop);
 Iscaled=uint8(255*double(I)./double(max(I(:))));
 rgbI=repmat(Iscaled,1,1,3);
@@ -114,4 +119,4 @@ fprintf('Palet width= %.2f cm\n',widthP*100)
 % heightPalet2=measure({validindex(1),validbotcorner(1)},{validindex(end),validbotcorner(end)},I);
 % heightP=(heightPalet1+heightPalet2)/2;
 % fprintf('Palet height= %.2f cm\n',heightP*100)
-% end
+end
