@@ -23,5 +23,10 @@ This allows to control manually how the two pictures overlay.
 The values of deformation used can be seen pressing the "s" key. In this case: 
 ```dx = 2, dy = -117, scale = 1.12, width_scale = 1.00, height_scale = 1.34```
 
-
 </details>
+
+# ALIGN_LIVE_STREAM
+This code is the same as _align manually_ but using a video, and not only one snapshot.
+
+> [!TIP]
+> Try defining the parameters using the snapshot, it's visually more pleasing!

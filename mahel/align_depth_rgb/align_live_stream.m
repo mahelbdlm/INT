@@ -1,4 +1,4 @@
-% This script takes the same photo with the depth and RGB sensor
+% This script is the same as align_manually, but with a stream continuous video
 % and allows for a manual reshaping of the image
 % Last modification: 12/11/2024
 % Based on https://dev.intelrealsense.com/docs/rs-measure
@@ -46,57 +46,10 @@ try
         frames = pipeline.wait_for_frames();
     end
 
-        % Wait for a new frame set
-        disp("Getting frame");
-
-        frames = pipeline.wait_for_frames();
-        depth = frames.get_depth_frame();
-        
-        color = frames.get_color_frame();
-        
-        
-        if ~isempty(frames)
-            aligned_frames = align_to.process(frames);
-            depth_frame = aligned_frames.get_depth_frame();
-    
-            % Apply filters
-            depth_frame = decimation.process(depth_frame);
-            disparity_frame = depth2disparity.process(depth_frame);
-            depth_frame = spatial.process(disparity_frame);
-            depth_frame = temporal.process(depth_frame);
-            depth_frame = disparity2depth.process(depth_frame);
-    
-            % Colorize depth frame
-            colorized_depth = colorizer.colorize(depth_frame);
-            
-            % Display the colorized depth frame
-            img = colorized_depth.get_data();
-            height = depth.get_height();
-            width = depth.get_width();
-            depth_frame_colorized = permute(reshape(colorizer.colorize(depth).get_data()', [3, width, height]), [3, 2, 1]);
-            
-            % Treat the colorized image
-            wc = color.get_width();
-            hc = color.get_height();
-            
-            color_data = color.get_data();
-            % Reshape color data as RGBA (4 channels) format
-            color_img_rgba = permute(reshape(color_data, [4, wc, hc]), [3, 2, 1]);
-            
-            % Discard the alpha channel to keep only RGB
-            color_img = color_img_rgba(:, :, 1:3);
-            
-            % Display the RGB image (debug)
-            % imshow(color_img);
-            color_img_resized = imresize(color_img, [480, 640]);
-   
-            % Create the figure and sliders for adjustments
-            fig = figure('KeyPressFcn', @(src, event) keyPressCallback(src, event));  % Pass the figure to keyPressCallback
-            
-            % Display an initial overlaid version of the images
-            hImage = imshowpair(color_img_resized, depth_frame_colorized, 'blend', 'Scaling', 'joint');
-            title('Overlaid Images with Transparency Control');
-            
+     % Create the figure and sliders for adjustments
+     fig = figure('KeyPressFcn', @(src, event) keyPressCallback(src, event));  % Pass the figure to keyPressCallback
+     title('Overlaid Images with Transparency Control');
+     hImage = imshowpair(zeros(480,640,3), zeros(480,640,3), 'blend', 'Scaling', 'joint');
             % Create sliders with initial values passed as arguments
             uicontrol('Style', 'text', 'Position', [20, 20, 120, 20], 'String', 'Horizontal Movement');
             sliderX = uicontrol('Style', 'slider', 'Min', -200, 'Max', 100, 'Value', sliderX_init, ...
@@ -134,10 +87,64 @@ try
             set(sliderWidth, 'Callback', @(src, event) updateAlignment(sliderX, sliderY, sliderScale, sliderWidth, sliderHeight, sliderAlpha, depth_frame_colorized, color_img_resized, hImage));
             set(sliderHeight, 'Callback', @(src, event) updateAlignment(sliderX, sliderY, sliderScale, sliderWidth, sliderHeight, sliderAlpha, depth_frame_colorized, color_img_resized, hImage));
             set(sliderAlpha, 'Callback', @(src, event) updateAlignment(sliderX, sliderY, sliderScale, sliderWidth, sliderHeight, sliderAlpha, depth_frame_colorized, color_img_resized, hImage));
+
+            % Processing frames in a loop
+            while ishandle(fig)  % Loop until the figure is closed
+            % Wait for a new frame set
+            frames = pipeline.wait_for_frames();
+            depth = frames.get_depth_frame();
+            color = frames.get_color_frame();
             
-            % Initialize the display with default values
-            updateAlignment(sliderX, sliderY, sliderScale, sliderWidth, sliderHeight, sliderAlpha, depth_frame_colorized, color_img_resized, hImage);
-            
+            if ~isempty(frames)
+                aligned_frames = align_to.process(frames);
+                depth_frame = aligned_frames.get_depth_frame();
+                
+                % Apply filters
+                depth_frame = decimation.process(depth_frame);
+                disparity_frame = depth2disparity.process(depth_frame);
+                depth_frame = spatial.process(disparity_frame);
+                depth_frame = temporal.process(depth_frame);
+                depth_frame = disparity2depth.process(depth_frame);
+                
+                % Colorize depth frame
+                colorized_depth = colorizer.colorize(depth_frame);
+                
+                % Display the colorized depth frame
+                img = colorized_depth.get_data();
+                height = depth.get_height();
+                width = depth.get_width();
+                depth_frame_colorized = permute(reshape(colorizer.colorize(depth).get_data()', [3, width, height]), [3, 2, 1]);
+                
+                % Treat the colorized image
+                wc = color.get_width();
+                hc = color.get_height();
+                
+                color_data = color.get_data();
+                color_img_rgba = permute(reshape(color_data, [4, wc, hc]), [3, 2, 1]);
+                
+                % Discard the alpha channel to keep only RGB
+                color_img = color_img_rgba(:, :, 1:3);
+                
+                color_img_resized = imresize(color_img, [480, 640]);
+                
+                % Initialize the display with the first frame only (only once)
+                if ~exist('hImage', 'var') || ~ishandle(hImage)
+                    hImage = imshowpair(color_img_resized, depth_frame_colorized, 'blend', 'Scaling', 'joint');
+                else
+                    % Update the overlaid image dynamically with the new frame
+                    % Create the blended image with transparency control
+                    blendedImage = blendImages(color_img_resized, depth_frame_colorized, get(sliderAlpha, 'Value'));
+                    
+                    % Update the image data in the `hImage` object
+                    hImage.CData = blendedImage;
+                end
+                
+                % Update the alignment (transform the images based on slider values)
+                updateAlignment(sliderX, sliderY, sliderScale, sliderWidth, sliderHeight, sliderAlpha, depth_frame_colorized, color_img_resized, hImage);
+                
+                % Pause to simulate video update rate
+                pause(0.2);
+            end
         end
     
 catch error
@@ -186,7 +193,7 @@ function updateAlignment(sliderX, sliderY, sliderScale, sliderWidth, sliderHeigh
     hImage.CData = blendedImage;
 end
 
-% Function for blending images with transparency
+% Function to blend images with transparency
 function blendedImage = blendImages(rgb_image, depth_image, alpha)
     % We assume both images have the same size
     if size(rgb_image, 3) == 3 && size(depth_image, 3) == 1
@@ -202,6 +209,7 @@ function blendedImage = blendImages(rgb_image, depth_image, alpha)
     % Ensure the values stay within the range [0, 255] (for a uint8 image)
     blendedImage = uint8(blendedImage);
 end
+
 
 % Function to handle key press
 function keyPressCallback(src, event)
