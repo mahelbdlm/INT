@@ -1,4 +1,7 @@
-# ALIGN_MANUALLY
+# ALIGN DEPTH RGB
+The scripts in this folder try to match the RGB and depth camera data by applying photoshop-like resizing, and distortionning.
+
+## ALIGN_MANUALLY
 This code allows to configure manually a resizing of the depth and rgb image data superposed.
 Using a reference (for example a squared box), it is possible to align the RGB and depth data.
 
@@ -25,7 +28,7 @@ The values of deformation used can be seen pressing the "s" key. In this case:
 
 </details>
 
-# ALIGN_LIVE_STREAM
+## ALIGN_LIVE_STREAM
 This code is the same as _align manually_ but using a video, and not only one snapshot.
 
 > [!TIP]

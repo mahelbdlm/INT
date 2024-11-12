@@ -1,11 +1,10 @@
 % This code streams from the camera in both depth and rgb image and shows them in a montage. 
 % It allows a better visualization of both what the depth camera sees and what the rgb camera sees.
 % Note that the RGB data is reshaped to correspond to the sizes of the depth image, and would in reality be much more detailed.
-% Last modification: 11/11/2024 12:25
+% Last modification: 11/11/2024
 
 clear f;
 close all;
-debug_mode = 0;
 
 % Connect with default configuration
 try

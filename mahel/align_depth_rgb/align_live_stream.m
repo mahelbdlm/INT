@@ -1,14 +1,12 @@
 % This script is the same as align_manually, but with a stream continuous video
 % and allows for a manual reshaping of the image
-% Last modification: 12/11/2024
 % Based on https://dev.intelrealsense.com/docs/rs-measure
+% Last modification: 12/11/2024
 
-% dx = 2, dy = -126, scale = 1.12, width_scale = 1.00, height_scale = 1.34
 % dx = 2, dy = -117, scale = 1.12, width_scale = 0.98, height_scale = 1.34
 
 clear f;
 close all;
-debug_mode = 0;
 
 sliderX_init = 2;
 sliderY_init = -117;
