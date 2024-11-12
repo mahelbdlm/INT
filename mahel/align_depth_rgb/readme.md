@@ -18,10 +18,8 @@ Upon executing the code:
     <img height="60%" width="60%" alt="Image from matlab" src="/../main/mahel/img/img5.png?raw=true">
 </div>
 As it can be seen in the previous picture, the picture can be modified by using the sliders. 
-This allows to control manually how the two pictures overlay. 
+This allows to control manually how the two pictures overlay. The values of deformation used can be seen pressing the "s" key. In this case: 
 
-The values of deformation used can be seen pressing the "s" key. In this case: 
 ```dx = 2, dy = -117, scale = 1.12, width_scale = 1.00, height_scale = 1.34```
-
 
 </details>
