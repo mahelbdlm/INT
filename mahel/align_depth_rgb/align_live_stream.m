@@ -3,16 +3,25 @@
 % Based on https://dev.intelrealsense.com/docs/rs-measure
 % Last modification: 12/11/2024
 
-% dx = 2, dy = -117, scale = 1.12, width_scale = 0.98, height_scale = 1.34
 
 clear f;
 close all;
 
-sliderX_init = 2;
-sliderY_init = -117;
-sliderScale_init = 1.12;
-sliderWidth_init = 1;
-sliderHeight_init = 1.34;
+%Default values
+
+% sliderX_init = 0;
+% sliderY_init = 0;
+% sliderScale_init = 1;
+% sliderWidth_init = 1;
+% sliderHeight_init = 1;
+
+sliderX_init = -30;
+sliderY_init = -126;
+sliderScale_init = 1.18;
+sliderWidth_init = 0.97;
+sliderHeight_init = 1.28;
+
+
 sliderAlpha_init = 0.4;
 
 
@@ -76,15 +85,18 @@ try
             
             % Save the slider handles in the figure using guidata
             guidata(fig, struct('sliderX', sliderX, 'sliderY', sliderY, 'sliderScale', sliderScale, ...
-                                'sliderWidth', sliderWidth, 'sliderHeight', sliderHeight, 'sliderAlpha', sliderAlpha));
+                    'sliderWidth', sliderWidth, 'sliderHeight', sliderHeight, 'sliderAlpha', sliderAlpha, ...
+                    'sliderX_init', sliderX_init, 'sliderY_init', sliderY_init, 'sliderScale_init', sliderScale_init, ...
+                    'sliderWidth_init', sliderWidth_init, 'sliderHeight_init', sliderHeight_init, 'sliderAlpha_init', sliderAlpha_init));
+
         
-            % Define the callbacks for the sliders
-            set(sliderX, 'Callback', @(src, event) updateAlignment(sliderX, sliderY, sliderScale, sliderWidth, sliderHeight, sliderAlpha, depth_frame_colorized, color_img_resized, hImage));
-            set(sliderY, 'Callback', @(src, event) updateAlignment(sliderX, sliderY, sliderScale, sliderWidth, sliderHeight, sliderAlpha, depth_frame_colorized, color_img_resized, hImage));
-            set(sliderScale, 'Callback', @(src, event) updateAlignment(sliderX, sliderY, sliderScale, sliderWidth, sliderHeight, sliderAlpha, depth_frame_colorized, color_img_resized, hImage));
-            set(sliderWidth, 'Callback', @(src, event) updateAlignment(sliderX, sliderY, sliderScale, sliderWidth, sliderHeight, sliderAlpha, depth_frame_colorized, color_img_resized, hImage));
-            set(sliderHeight, 'Callback', @(src, event) updateAlignment(sliderX, sliderY, sliderScale, sliderWidth, sliderHeight, sliderAlpha, depth_frame_colorized, color_img_resized, hImage));
-            set(sliderAlpha, 'Callback', @(src, event) updateAlignment(sliderX, sliderY, sliderScale, sliderWidth, sliderHeight, sliderAlpha, depth_frame_colorized, color_img_resized, hImage));
+            % % Define the callbacks for the sliders
+            % set(sliderX, 'Callback', @(src, event) updateAlignment(sliderX, sliderY, sliderScale, sliderWidth, sliderHeight, sliderAlpha, depth_frame_colorized, color_img_resized, hImage));
+            % set(sliderY, 'Callback', @(src, event) updateAlignment(sliderX, sliderY, sliderScale, sliderWidth, sliderHeight, sliderAlpha, depth_frame_colorized, color_img_resized, hImage));
+            % set(sliderScale, 'Callback', @(src, event) updateAlignment(sliderX, sliderY, sliderScale, sliderWidth, sliderHeight, sliderAlpha, depth_frame_colorized, color_img_resized, hImage));
+            % set(sliderWidth, 'Callback', @(src, event) updateAlignment(sliderX, sliderY, sliderScale, sliderWidth, sliderHeight, sliderAlpha, depth_frame_colorized, color_img_resized, hImage));
+            % set(sliderHeight, 'Callback', @(src, event) updateAlignment(sliderX, sliderY, sliderScale, sliderWidth, sliderHeight, sliderAlpha, depth_frame_colorized, color_img_resized, hImage));
+            % set(sliderAlpha, 'Callback', @(src, event) updateAlignment(sliderX, sliderY, sliderScale, sliderWidth, sliderHeight, sliderAlpha, depth_frame_colorized, color_img_resized, hImage));
 
             % Processing frames in a loop
             while ishandle(fig)  % Loop until the figure is closed
@@ -222,6 +234,15 @@ function keyPressCallback(src, event)
         scale = get(figData.sliderScale, 'Value');
         width_scale = get(figData.sliderWidth, 'Value');
         height_scale = get(figData.sliderHeight, 'Value');
-        fprintf('dx = %d, dy = %d, scale = %.2f, width_scale = %.2f, height_scale = %.2f\n', dx, dy, scale, width_scale, height_scale);
+        fprintf('sliderX_init = %d;\nsliderY_init = %d;\nsliderScale_init = %.2f;\nsliderWidth_init = %.2f;\nsliderHeight_init = %.2f;\n', dx, dy, scale, width_scale, height_scale);
+    
+    elseif strcmp(event.Key, 'r')
+            % Reset sliders to initial values
+            set(figData.sliderX, 'Value', figData.sliderX_init);
+            set(figData.sliderY, 'Value', figData.sliderY_init);
+            set(figData.sliderScale, 'Value', figData.sliderScale_init);
+            set(figData.sliderWidth, 'Value', figData.sliderWidth_init);
+            set(figData.sliderHeight, 'Value', figData.sliderHeight_init);
+            set(figData.sliderAlpha, 'Value', figData.sliderAlpha_init);
     end
 end

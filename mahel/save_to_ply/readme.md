@@ -3,3 +3,6 @@ This code saves a pointcloud from the realsense camera to PLY file in order to b
 
 > [!WARNING]
 > This code works but shows some odd results. 
+
+## saveToPLY function
+Save file to PLY format in order to be used by the lidar apps from matlab

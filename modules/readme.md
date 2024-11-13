@@ -22,6 +22,3 @@ Below are some examples of utilization:
 | ```pipe=connectDepth(1);```  | Connect with high accuracy for depth sensor  |
 | ```pipe=connectDepth(1,60);```  | Connect with high accuracy and 60 fps  |
 | ```pipe=connectDepth(0,60,640,480);```  | Connect without high accuracy, at 60 fps with width 640 and height 480  |
-
-## saveToPLY
-Save file to PLY format in order to be used by the lidar apps from matlab
