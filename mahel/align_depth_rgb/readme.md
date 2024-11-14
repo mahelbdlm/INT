@@ -1,6 +1,20 @@
 # ALIGN DEPTH RGB
 The scripts in this folder try to match the RGB and depth camera data by applying photoshop-like resizing, and distortionning.
 
+# TEST_ALL_ALIGN
+This code uses the realsense integrated _align_to_ function to align the depth and color sensor. 
+<details>
+
+<summary>USAGE EXAMPLE</summary>
+
+Upon executing the code: 
+<div align="center">
+    <img height="60%" width="60%" alt="Image" src="https://github.com/user-attachments/assets/a49db956-c47f-4cf1-b1dd-73c952978080">
+</div>
+As it can be seen in the previous picture, the camera already has a function to align depth and color data, we now need to make them match in the same dimensions.
+
+</details>
+
 ## ALIGN_LIVE_STREAM
 This scripts shows a live video of both the RGB camera and depth sensor overlayed, 
 and some cursors in order to apply the necessary transformations to match the RGB and the depth data.
