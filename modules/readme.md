@@ -89,4 +89,4 @@ Below are some examples of utilization:
 
 ## checkPath
 This function ensures the user has the right folder selected, or calculates the right relative path to this folder. 
-If the user is outside the INT folder, or inside /folder2 when the path is /folder1/subfolder1, the function returns an error.
+If the user is outside the INT folder, or inside ```/folder2``` when the path is ```/folder1/subfolder1```, the function returns an error.
