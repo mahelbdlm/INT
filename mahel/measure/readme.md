@@ -55,4 +55,4 @@ This is particularly useful to observe the difference of vision between the dept
 This code allows to calculate a distance using the depth camera between 2 points, selecting them on the plot.
 
 > [!NOTE]
-> This code will now be updated [here](https://github.com/mahelbdlm/INT/blob/main/jan/select_2_pixels.m)
+> This code will now be updated [here](/../main/jan/select_2_pixels.m)

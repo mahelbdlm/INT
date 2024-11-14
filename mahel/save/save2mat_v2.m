@@ -29,11 +29,9 @@ video_color_alignto_depth=struct();
 video_color_alignto_color=struct();
 
 
-% Calculate the path based on the current folder
-path = checkPath(targetPath);
-
-% Connect with default configuration
 try
+    % Calculate the path based on the current folder
+    path = checkPath(targetPath);
     if ~exist("pipeline", "var")
         [pipeline, profile] = connectDepth(); % Connect depth with high accuracy
 
@@ -227,11 +225,12 @@ try
 catch error
     % Error handling
     if error.identifier == "MATLAB:UndefinedFunction"
-        if contains(error.message, 'connectDepth') || contains(error.message, 'dist_3d')
+        if contains(error.message, 'connectDepth') || contains(error.message, 'dist_3d') || contains(error.message, 'checkPath')
             fprintf(2, "The modules folder was not added to your matlab path.\nIt has now been added, you just need to rerun the code.\n");
             addpath('modules');
             %addpath(genpath('modules')) %Add Folder and Its Subfolders to Search Path
         else
+            fprintf("Unknown error:\n");
             rethrow(error);
         end
     elseif error.identifier == "MATLAB:ginput:FigureDeletionPause"

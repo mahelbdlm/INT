@@ -2,7 +2,7 @@
 % relative path to the desired folder
 % INPUT: Desired path
 % OUTPUT: output.pipeline and output.profile
-% Last modification: 09/11/2024 11:57
+% Last modification: 14/11/2024
 
 function path=checkPath(targetPath_f)
     currentDir = replace(string(pwd), "\", "/");
@@ -12,7 +12,7 @@ function path=checkPath(targetPath_f)
         if contains(targetPath_f, relativeDir)
             path = strip(erase(targetPath_f, relativeDir), "left", "/");
         else
-           throw(MException('mahel_incorporated:WRONG_PATH_MAHEL', ...
+           throw(MException('mahelcorp:WRONG_PATH_MAHEL', ...
             'You are not on a folder of the path. The path is "%s" and you are in "%s"',targetPath_f, relativeDir));
         end
     else
