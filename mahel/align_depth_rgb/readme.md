@@ -18,13 +18,12 @@ As it can be seen in the previous picture, the camera already has a function to 
 ## ALIGN_LIVE_STREAM
 This scripts shows a live video of both the RGB camera and depth sensor overlayed, 
 and some cursors in order to apply the necessary transformations to match the RGB and the depth data.
+> [!WARNING]
+> This code was created before making the realsense align_to work. We are currently evaluating whether it will be used or not. 
 
 > [!TIP]
 > Press the s key to show the values of the sliders (in matlab), and r key to revert to original values
 
-> [!WARNING]
-> This codes assumes the reshape values are constant. 
-> This assumption will be approved / denied with further testing
 
 <details>
 
@@ -54,7 +53,10 @@ Using this script, it will be determined if a simple transformation can make the
 This code allows to configure manually a resizing of the depth and rgb image data superposed.
 Using a reference (for example a squared box), it is possible to align the RGB and depth data.
 
-> [!NOTE]
+> [!WARNING]
+> This code was created before making the realsense align_to work. We are currently evaluating whether it will be used or not. 
+
+> [!TIP]
 > You can see the values of the sliders by pressing the "s" key
 
 <details>
