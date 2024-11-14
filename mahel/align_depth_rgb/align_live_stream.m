@@ -9,17 +9,17 @@ close all;
 
 %Default values
 
-% sliderX_init = 0;
-% sliderY_init = 0;
-% sliderScale_init = 1;
-% sliderWidth_init = 1;
-% sliderHeight_init = 1;
+sliderX_init = 0;
+sliderY_init = 0;
+sliderScale_init = 1;
+sliderWidth_init = 1;
+sliderHeight_init = 1;
 
-sliderX_init = -30;
-sliderY_init = -126;
-sliderScale_init = 1.18;
-sliderWidth_init = 0.97;
-sliderHeight_init = 1.28;
+% sliderX_init = -30;
+% sliderY_init = -126;
+% sliderScale_init = 1.18;
+% sliderWidth_init = 0.97;
+% sliderHeight_init = 1.28;
 
 
 sliderAlpha_init = 0.4;
@@ -28,7 +28,7 @@ sliderAlpha_init = 0.4;
 % Connect with default configuration
 try
     if ~exist("pipeline", "var")
-        [pipeline, profile] = connectDepth(1); % Connect depth with high accuracy
+        [pipeline, profile] = connectDepth(); % Connect depth with high accuracy
 
         % Initialize filters
         colorizer = realsense.colorizer();
@@ -108,6 +108,7 @@ try
             if ~isempty(frames)
                 aligned_frames = align_to.process(frames);
                 depth_frame = aligned_frames.get_depth_frame();
+                color_frame_aligned = aligned_frames.get_color_frame();
                 
                 % Apply filters
                 depth_frame = decimation.process(depth_frame);
@@ -126,10 +127,10 @@ try
                 depth_frame_colorized = permute(reshape(colorizer.colorize(depth).get_data()', [3, width, height]), [3, 2, 1]);
                 
                 % Treat the colorized image
-                wc = color.get_width();
-                hc = color.get_height();
+                wc = color_frame_aligned.get_width();
+                hc = color_frame_aligned.get_height();
                 
-                color_data = color.get_data();
+                color_data = color_frame_aligned.get_data();
                 color_img_rgba = permute(reshape(color_data, [4, wc, hc]), [3, 2, 1]);
                 
                 % Discard the alpha channel to keep only RGB
