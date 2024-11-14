@@ -1,19 +1,12 @@
-% This code saves both the RGB and depth data in a .mat file
+% This code shows both depth and color raw data, aligned to depth and
+% aligned to color in a plot.
+
 % Last modification: 12/11/2024
 clear;
 close all;
 
-path = "mahel/save/";
-folderName = "palet_con_rodillos_t2";
+nbFrames = 1; % Number of frames to save
 
-saveFiles = 0;
-
-video_depth_original=struct();
-video_depth_filtered=struct();
-video_color_original=struct();
-video_color_aligned=struct();
-
-fps = 30; %Default with connectDepth
 % Connect with default configuration
 try
     if ~exist("pipeline", "var")
@@ -44,29 +37,12 @@ try
     end
 
     % Create figure if it doesn't exist
-    if ~exist("f", "var")
-        screenSize = get(0, 'ScreenSize');
-        % Define the figure dimensions
-        figWidth = 800;
-        figHeight = 600;
-        
-        % Calculate the position for centering
-        figX = (screenSize(3) - figWidth) / 2;
-        figY = (screenSize(4) - figHeight) / 2;
-        
-        % Create the centered figure
-        f = figure('Name', 'RealSense Depth Measurement', 'NumberTitle', 'off', ...
-                   'Position', [figX, figY, figWidth, figHeight], 'CloseRequestFcn', @close_window);
-
-        % Variables to store points and distance text
-        points = [];
-        distance_texts = [];
-    end
+    
    
     % Processing frames in a loop
-    for i = 1:fps*5 %5 sec
+    for i = 1:nbFrames
         % Wait for a new frame set
-        fprintf("Getting frame %d/%d\n", i, fps*5);
+        fprintf("Getting frame %d/%d\n", i, nbFrames);
 
         frames = pipeline.wait_for_frames();
 
@@ -77,7 +53,7 @@ try
         if ~isempty(frames)
             aligned_depth_frames = align_to_depth.process(frames);
             aligned_color_frames = align_to_color.process(frames);
-            
+
             depth_align_depth = aligned_depth_frames.get_depth_frame();
             color_align_depth = aligned_depth_frames.get_color_frame();
             
@@ -108,27 +84,60 @@ try
             depth_w = depth_frame.get_width();
             depth_frame_original = permute(reshape(colorizer.colorize(depth_frame).get_data()', [3, depth_w, depth_h]), [3, 2, 1]);
 
-            %Treat depth frame aligned
-            depth_aligned_h = depth_frame.get_height();
-            depth_aligned_w = depth_frame.get_width();
-            depth_frame_original = permute(reshape(colorizer.colorize(depth_frame).get_data()', [3, depth_w, depth_h]), [3, 2, 1]);
+            %Treat depth frame from align_to depth
+            depth_aligned_depth_h = depth_align_depth.get_height();
+            depth_aligned_depth_w = depth_align_depth.get_width();
+            depth_frame_aligned_depth = permute(reshape(colorizer.colorize(depth_align_depth).get_data()', [3, depth_aligned_depth_w, depth_aligned_depth_h]), [3, 2, 1]);
 
+            %Treat depth frame from align_to color
+            depth_aligned_color_h = depth_align_color.get_height();
+            depth_aligned_color_w = depth_align_color.get_width();
+            depth_frame_aligned_color = permute(reshape(colorizer.colorize(depth_align_color).get_data()', [3, depth_aligned_color_w, depth_aligned_color_h]), [3, 2, 1]);
 
             %Treat the colorized image
             color_w=color_frame.get_width();
             color_h=color_frame.get_height();
-            color_img_rgba = permute(reshape(color_frame.get_data(),[],color_w,color_h), [3, 2, 1]);
-            color_img_rgb = color_img_rgba(:, :, 1:3);
+            color_original_rgba = permute(reshape(color_frame.get_data(),[],color_w,color_h), [3, 2, 1]);
+            color_original_rgb = color_original_rgba(:, :, 1:3);
+
+             %Treat the colorized image aligned depth
+            color_aligned_depth_w=color_align_depth.get_width();
+            color_aligned_depth_h=color_align_depth.get_height();
+            color_aligned_depth_rgba = permute(reshape(color_align_depth.get_data(),[],color_aligned_depth_w,color_aligned_depth_h), [3, 2, 1]);
+            color_aligned_depth_rgb = color_aligned_depth_rgba(:, :, 1:3);
+
+             %Treat the colorized image aligned color
+            color_aligned_color_w=color_align_color.get_width();
+            color_aligned_color_h=color_align_color.get_height();
+            color_aligned_color_rgba = permute(reshape(color_align_color.get_data(),[],color_aligned_color_w,color_aligned_color_h), [3, 2, 1]);
+            color_aligned_color_rgb = color_aligned_depth_rgba(:, :, 1:3);
             
-
-            imshowpair(depth_frame_original,color_img_rgb,"montage");
-
-            if saveFiles == 1
-            video_depth_original(i).df=reshape(depth.get_data(),[width,height]);
-            video_depth_filtered(i).df=depth_frame_colorized;
-            video_color_original(i).df=color_img;
-            video_color_aligned(i).df=color_img;
-            end
+            subplot(2, 3, 1);
+            imshow(depth_frame_original,[]);
+            title('Depth Frame Original');
+            drawnow;
+            subplot(2, 3, 2);
+            imshow(depth_frame_aligned_depth,[]);
+            title('Depth Aligned Depth');
+            drawnow;
+            subplot(2, 3, 3); 
+            imshow(depth_frame_aligned_color,[]);
+            title('Depth Aligned Color');
+            drawnow;
+            subplot(2, 3, 4); 
+            imshow(color_original_rgb);
+            title('Color original');
+            drawnow;
+            subplot(2, 3, 5); 
+            imshow(color_aligned_depth_rgb);
+            title('Color aligned depth');
+            drawnow;
+            subplot(2, 3, 6); 
+            imshow(color_aligned_color_rgb,[]);
+            title('Color aligned color');
+            drawnow;
+            
+            %imshowpair(depth_frame_original,color_img_rgb,"montage");
             
         end
         %pause(0.1);
@@ -136,23 +145,6 @@ try
 
     pipeline.stop();
 
-    if saveFiles == 1
-        testNum = 1;
-        while exist(path+folderName+testNum, 'dir')
-            testNum = testNum+1;
-        end
-    
-        mkdir(path+folderName+testNum);
-    
-        fprintf("Saving content to "+path+folderName+testNum+"...");
-    
-        save(path+folderName+testNum+'/video_depth_original.mat',"video_depth_original");
-        save(path+folderName+testNum+'/video_depth_filtered.mat',"video_depth_filtered");
-        save(path+folderName+testNum+'/video_color_original.mat',"video_color_original");
-        save(path+folderName+testNum+'/video_color_aligned.mat',"video_color_aligned");
-    
-        fprintf("Content successfully saved\n");
-    end
 catch error
     % Error handling
     if error.identifier == "MATLAB:UndefinedFunction"
@@ -171,11 +163,4 @@ catch error
         fprintf("Unknown error:\n");
         rethrow(error);
     end
-end
-
-% Callback function to stop the pipeline and close the window
-function close_window(~, ~)
-    clear f;
-    disp('Window closed');
-    delete(gcf);  % Close the GUI window
 end
