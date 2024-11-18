@@ -5,7 +5,9 @@
  */
 #include <Stepper.h>
 int val=0;
+int rpm = 300;
 const int stepsPerRevolution = 200;  // change this to fit the number of steps per revolution
+const bool debugMode = false;
 //const float 3.0; //Cm for 1 revolution
 // for your motor
 
@@ -37,7 +39,47 @@ void loop() {
   }
   if(val=='v'){
     Serial.print("Speed (rpm): ");
-     allumer();
+    int indexDec = 0, indexNumObtained=1;
+    int numObtained[3];
+    rpm = 0;
+    while(val != ';' && val!=13 && val != ',' && val != '.'){
+      val=Serial.read();
+      if(val>='0' && val<'9'){
+        numObtained[indexDec] = val-'0';
+        indexDec++;
+
+        if(debugMode){
+          Serial.print("Num obtained: ");
+          Serial.print(val-'0');
+
+          Serial.println("Array: ");
+          for(int i=0; i<3; i++){
+            Serial.println(numObtained[i]);
+          }
+        }
+      }
+      //rpm = rpm + indexDec * val-'0';
+      //Serial.println(rpm);
+      //indexDec++;
+    }
+    for(int i=indexDec-1; i>=0; i--){
+        rpm = rpm + indexNumObtained * numObtained[i];
+        indexNumObtained*=10;
+        if(debugMode){
+          Serial.print("Num obtained at index : ");
+          Serial.print(i);
+          Serial.print(" : ");
+          Serial.print(numObtained[i]);
+          Serial.print(",  RPM: ");
+          Serial.print(rpm);
+          Serial.print(",  Index: ");
+          Serial.println(indexNumObtained);
+        }
+        
+      }
+      Serial.print("RPM: ");
+      Serial.println(rpm);
+     //allumer();
 
   }
   if(val=='0'){
@@ -45,14 +87,23 @@ void loop() {
   }
   if(val=='4'){
     allumer();
-    myStepper.setSpeed(300);
-    myStepper.step(350*5);
+    for(int i=100; i<rpm; i+=5){
+      Serial.println(i);
+      myStepper.setSpeed(i);
+      myStepper.step(10);
+    }
+    myStepper.setSpeed(rpm);
+    myStepper.step(100*5);
+    for(int i=rpm; i>100; i-=5){
+      myStepper.setSpeed(i);
+      myStepper.step(10);
+    }
     eteindre();
   }
   if(val=='6'){
     allumer();
     myStepper.setSpeed(300);
-    myStepper.step(-350*5);
+    myStepper.step(-100*5);
     eteindre();
   }
 }
