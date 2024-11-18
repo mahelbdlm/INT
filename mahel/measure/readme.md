@@ -54,5 +54,5 @@ This is particularly useful to observe the difference of vision between the dept
 ## select_2_pixel.m
 This code allows to calculate a distance using the depth camera between 2 points, selecting them on the plot.
 
-> [!CAUTION]
-> This code does not work for now and is in developpement phase.
+> [!NOTE]
+> This code will now be updated [here](/../main/jan/select_2_pixels.m)

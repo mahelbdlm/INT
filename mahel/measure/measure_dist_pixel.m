@@ -3,6 +3,7 @@
 % Last modification: 09/11/2024 18:05
 
 clear f;
+clear;
 close all;
 
 % Connect with default configuration
