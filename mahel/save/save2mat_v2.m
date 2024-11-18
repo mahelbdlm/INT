@@ -3,9 +3,9 @@
 clear;
 close all;
 
-targetPath = "mahel/save/"; %Target path (respect to INT folder)
-folderName = "test";
-nbFrames = 30; % Number of frames to save
+targetPath = "mahel/detect_missing_part/"; %Target path (respect to INT folder)
+folderName = "missing_splinter";
+nbFrames = 150; % Number of frames to save
 
 plotResult = 0;
 
@@ -106,7 +106,7 @@ try
             depth_h = depth_frame.get_height();
             depth_w = depth_frame.get_width();
             depth_frame_original = permute(reshape(colorizer.colorize(depth_frame).get_data()', [3, depth_w, depth_h]), [3, 2, 1]);
-            video_depth_original.df = depth_frame_original;
+            video_depth_original.df(i) = depth_frame_original;
             end
 
             if save_video_depth_alignto_depth==1
@@ -114,7 +114,7 @@ try
             depth_aligned_depth_h = depth_align_depth.get_height();
             depth_aligned_depth_w = depth_align_depth.get_width();
             depth_frame_aligned_depth = permute(reshape(colorizer.colorize(depth_align_depth).get_data()', [3, depth_aligned_depth_w, depth_aligned_depth_h]), [3, 2, 1]);
-            video_depth_alignto_depth.df = depth_frame_aligned_depth;
+            video_depth_alignto_depth.df(i) = depth_frame_aligned_depth;
             end
 
             if save_video_depth_alignto_color==1
@@ -122,7 +122,7 @@ try
             depth_aligned_color_h = depth_align_color.get_height();
             depth_aligned_color_w = depth_align_color.get_width();
             depth_frame_aligned_color = permute(reshape(colorizer.colorize(depth_align_color).get_data()', [3, depth_aligned_color_w, depth_aligned_color_h]), [3, 2, 1]);
-            video_depth_alignto_color.df = depth_frame_aligned_color;
+            video_depth_alignto_color.df(i) = depth_frame_aligned_color;
             end
 
             if save_video_color_original==1
@@ -131,7 +131,7 @@ try
             color_h=color_frame.get_height();
             color_original_rgba = permute(reshape(color_frame.get_data(),[],color_w,color_h), [3, 2, 1]);
             color_original_rgb = color_original_rgba(:, :, 1:3);
-            video_color_original.df = color_original_rgb;
+            video_color_original.df(i) = color_original_rgb;
             end
 
             if save_video_color_alignto_depth==1
@@ -140,7 +140,7 @@ try
             color_aligned_depth_h=color_align_depth.get_height();
             color_aligned_depth_rgba = permute(reshape(color_align_depth.get_data(),[],color_aligned_depth_w,color_aligned_depth_h), [3, 2, 1]);
             color_aligned_depth_rgb = color_aligned_depth_rgba(:, :, 1:3);
-            video_color_alignto_depth.df = color_aligned_depth_rgb;
+            video_color_alignto_depth.df(i) = color_aligned_depth_rgb;
             end
 
             if save_video_color_alignto_color==1
@@ -149,7 +149,7 @@ try
             color_aligned_color_h=color_align_color.get_height();
             color_aligned_color_rgba = permute(reshape(color_align_color.get_data(),[],color_aligned_color_w,color_aligned_color_h), [3, 2, 1]);
             color_aligned_color_rgb = color_aligned_depth_rgba(:, :, 1:3);
-            video_color_alignto_color.df = color_aligned_color_rgb;
+            video_color_alignto_color.df(i) = color_aligned_color_rgb;
             end
            
             if plotResult==1

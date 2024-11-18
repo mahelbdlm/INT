@@ -19,6 +19,7 @@ classdef getFrames
         file_index
         file_depth_original
         nbFrames
+        debugMode
     end
     methods
         % CONSTRUCTOR
@@ -51,6 +52,10 @@ classdef getFrames
 
         function frame=setFPS(frame, fps)
             frame.userDefinedFPS = fps;
+        end
+
+        function frame=enableDebugMode(frame)
+            frame.debugMode = 1;
         end
         function frame = init(frame)
             if(frame.type=="camera")
@@ -124,8 +129,12 @@ classdef getFrames
                 path_checked=checkPath(frame.path); % Check if the user is on the right folder for the path
                 frame.file_color_original= load(path_checked+"/video_color_original.mat").video_color_original;
                 frame.file_index = 1;
-                frame.nbFrames = length(frame.file_color_original);
+                frame.nbFrames = 1;
                 frame.file_depth_original= load(path_checked+"/video_depth_original.mat").video_depth_original;
+
+                if(frame.debugMode)
+                    fprintf("nbFrames: %d, size_color: %d, size_depth: %d\n", frame.nbFrames, length(frame.file_color_original.df),length(frame.file_depth_original.df))
+                end
             end
 
         end
@@ -150,6 +159,10 @@ classdef getFrames
 
             else
                 % Get frame from file
+                if(frame.debugMode)
+                    fprintf("Index: %d\n", frame.file_index);
+                end
+
                 depth = frame.file_color_original(frame.file_index).df;
                 color = frame.file_depth_original(frame.file_index).df;
 

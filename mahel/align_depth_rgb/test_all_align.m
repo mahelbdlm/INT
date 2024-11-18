@@ -110,7 +110,7 @@ try
             color_aligned_color_w=color_align_color.get_width();
             color_aligned_color_h=color_align_color.get_height();
             color_aligned_color_rgba = permute(reshape(color_align_color.get_data(),[],color_aligned_color_w,color_aligned_color_h), [3, 2, 1]);
-            color_aligned_color_rgb = color_aligned_depth_rgba(:, :, 1:3);
+            color_aligned_color_rgb = color_aligned_color_rgba(:, :, 1:3);
             
             subplot(2, 3, 1);
             imshow(depth_frame_original,[]);
