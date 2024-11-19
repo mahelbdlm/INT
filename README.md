@@ -16,6 +16,37 @@ More information about each section will be provided below.
 
 Due to budget cuts in our project, only two out of three cameras will be available. One will be placed below the palet, and the other on one side. 
 
-## Detection of the palet from the sides
+<details>
 
+<summary>More information about palet defects</summary>
+
+### ALL THE DEFECTS A PALET CAN HAVE
+
+![Raklapok_3_EN_V2](https://github.com/user-attachments/assets/b8ae4ea6-bd8c-49f1-ae6a-81bd0d1aafb4)
+<div align="center">Image Source: [dewinter](https://dewinter.hu/standards/)</div>
+
+Palets can have many diferent defects, from missing the EU sign to missing parts of the palet itself. 
+
+In this project we will treat the following defects: 
+* Incorrect sizes
+* Missing panel
+* TBD
+
+</details>
+
+## Detection of the palet from the sides
+<div align="center">
+    <img height="60%" width="60%" alt="Image" src="https://github.com/user-attachments/assets/8f85b794-b99f-4169-b10d-4218a8bd55a7">
+</div>
+One camera will capture the palet using this angle. This will help us identify the following issues: 
+
+1. Incorrect sizes
+   - Detecting the squares of the palet, we can identify if the palet is european
+2. Missing panel
+
+> [!IMPORTANT]
+> The script will be able to identify if it is a european palet. As we don't have an american palet available, the correct identification of an american palet is not assured.
 ## Detection of the palet from below
+<div align="center">
+    <img height="30%" width="30%" alt="Image" src="https://github.com/user-attachments/assets/39c15630-afaa-466e-b110-62b829ce1f09">
+</div>
