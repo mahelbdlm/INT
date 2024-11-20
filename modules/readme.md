@@ -72,6 +72,9 @@ This file connects the relasense camera and returns a pipe.
 This function is customizable, using variable number of inputs (varargin, nargin).
 For more information on varargin, visit [matlab site](https://mathworks.com/help/matlab/ref/varargin.html) or ask a fellow student.
 
+> [!WARNING]
+> This script is now included in the getFrames class. You may still use it in your code, but it is advised to use the class instead as this script won't be receiving new updates.
+
 ```pipe=connectDepth(a,b,c,d);```
 | Variable  | Description |
 | ------------- | ------------- |
@@ -91,3 +94,5 @@ Below are some examples of utilization:
 ## checkPath
 This function ensures the user has the right folder selected, or calculates the right relative path to this folder. 
 If the user is outside the INT folder, or inside ```/folder2``` when the path is ```/folder1/subfolder1```, the function returns an error.
+
+You may use this script at any time to check if the user is in the right matlab path folder. 
