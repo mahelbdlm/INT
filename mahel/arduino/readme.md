@@ -4,6 +4,10 @@ This will allow us to move the palet/camera at a constant speed, thus improving 
 
 Based on [Arduino docs](https://docs.arduino.cc/learn/electronics/stepper-motors/)
 
+https://content.instructables.com/FTV/A7LY/IG8999RT/FTVA7LYIG8999RT.jpg?auto=webp&frame=1&width=1024&fit=bounds&md=MjAxNS0xMC0yNiAxMzoxMToxNy4w
+
+https://www.instructables.com/ARDUINO-stepper-motor-controlled-with-rotary-encod/
+
 Schematic circuit: 
 <div align="center">
     <img height="60%" width="60%" alt="Image from matlab" src="https://docs.arduino.cc/static/ab1a1fcdc08dc7e8a5cec48a5b705cbc/0a47e/bipolarKnob_schms.png">
