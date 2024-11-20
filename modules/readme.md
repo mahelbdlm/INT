@@ -15,6 +15,7 @@ This allows to have the same code for treating data, and be able to switch rapid
 | ```frame = setDepthHighAccuracy();``` | Enable the depth high accuracy |
 | ```frame = setWidthAndHeight(width, height);``` | Define custom width and height |
 | ```frame = setFPS(fps);``` | Define custom fps |
+| ```frame = enableDebugMode();``` | Enable the debug mode. This will show messages about each state to the console. Don't forget to ```clc``` it after! |
 | ```frame = frame = init();``` | Initialize the frame class. This step is mandatory as it is when the camera pipe is created / the files are loaded |
 | ```[frame,depth,color] = get_frame_original(frame);``` | Returns _depth_original_ and _color_original_ already in image format |
 | ```frame.stop()``` | Corresponds to the ```pipe.stop()``` of the realsense code |
@@ -71,6 +72,9 @@ This file connects the relasense camera and returns a pipe.
 This function is customizable, using variable number of inputs (varargin, nargin).
 For more information on varargin, visit [matlab site](https://mathworks.com/help/matlab/ref/varargin.html) or ask a fellow student.
 
+> [!WARNING]
+> This script is now included in the getFrames class. You may still use it in your code, but it is advised to use the class instead as this script won't be receiving new updates.
+
 ```pipe=connectDepth(a,b,c,d);```
 | Variable  | Description |
 | ------------- | ------------- |
@@ -90,3 +94,5 @@ Below are some examples of utilization:
 ## checkPath
 This function ensures the user has the right folder selected, or calculates the right relative path to this folder. 
 If the user is outside the INT folder, or inside ```/folder2``` when the path is ```/folder1/subfolder1```, the function returns an error.
+
+You may use this script at any time to check if the user is in the right matlab path folder. 
