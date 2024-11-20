@@ -15,6 +15,7 @@ This allows to have the same code for treating data, and be able to switch rapid
 | ```frame = setDepthHighAccuracy();``` | Enable the depth high accuracy |
 | ```frame = setWidthAndHeight(width, height);``` | Define custom width and height |
 | ```frame = setFPS(fps);``` | Define custom fps |
+| ```frame = enableDebugMode();``` | Enable the debug mode. This will show messages about each state to the console. Don't forget to ```clc``` it after! |
 | ```frame = frame = init();``` | Initialize the frame class. This step is mandatory as it is when the camera pipe is created / the files are loaded |
 | ```[frame,depth,color] = get_frame_original(frame);``` | Returns _depth_original_ and _color_original_ already in image format |
 | ```frame.stop()``` | Corresponds to the ```pipe.stop()``` of the realsense code |
