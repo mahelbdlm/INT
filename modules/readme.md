@@ -12,7 +12,7 @@ This allows to have the same code for treating data, and be able to switch rapid
 | ------------- | ------------- |
 | ```frame = getFrames();```<br/>```frame = getFrames("camera");```<br/>```frame = getFrames("camera", "jan");```  | Define the frame class to load frames from the camera |
 | ```frame = getFrames("mahel/save/palet_con_rodillos4");```<br/>```frame = getFrames("mahel/save/palet_con_rodillos4", "mahel");```  | Define the frame class to load frames from the folder ```mahel/save/palet_con_rodillos4```|
-| ```frame = getFrames(pathToFolder, "jan");```  | Define the frame class to load frames from the file in _jan_ saving format |
+| ```frame = getFrames(pathToFolder, "jan");```  | Define the frame class to load frames from the file in _jan_ saving format (default is _mahel_) |
 | ```frame = setDepthHighAccuracy();``` | Enable the depth high accuracy |
 | ```frame = setWidthAndHeight(width, height);``` | Define custom width and height |
 | ```frame = setFPS(fps);``` | Define custom fps |
@@ -20,6 +20,22 @@ This allows to have the same code for treating data, and be able to switch rapid
 | ```frame = frame = init();``` | Initialize the frame class. This step is mandatory as it is when the camera pipe is created / the files are loaded |
 | ```[frame,depth,color] = get_frame_original(frame);``` | Returns _depth_original_ and _color_original_ already in image format |
 | ```frame.stop()``` | Corresponds to the ```pipe.stop()``` of the realsense code |
+
+<details>
+
+<summary>Understand jan and mahel format</summary>
+
+Due to the limitations in terms of performance and sizes available to upload in github, two saving formats have been defined.
+The getFrames class intends to simplify the use of them. 
+
+jan format: 
+This format intends to save all data to one .mat file. This includes color, depth but also fps and time for each frame.
+
+mahel format: 
+This format splits each section onto separate files. This allows for smaller files, which can easily be uploaded through github.
+It does not yet include fps and time for each frame.
+
+</details>
 
 <details>
 

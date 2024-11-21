@@ -138,18 +138,18 @@ classdef getFrames
                 % Get frame from video
                 path_checked=checkPath(frame.path); % Check if the user is on the right folder for the path
                 frame.file_index = 1;
-                if frame.saveType=="jan"
-                    frame.file_video= load(path_checked+"/video1.mat").video;
-                    frame.nbFrames = length(frame.file_video);
  
-                elseif frame.saveType=="mahel"
+                if frame.saveType=="mahel"
                     frame.file_color_original= load(path_checked+"/video_color_original.mat").video_color_original;
                     frame.nbFrames = length(frame.file_color_original);
                     frame.file_depth_original= load(path_checked+"/video_depth_original.mat").video_depth_original;
-
-                    if(frame.debugMode)
+                elseif frame.saveType=="jan"
+                    frame.file_video= load(path_checked+"/video1.mat").video;
+                    frame.nbFrames = length(frame.file_video);
+                    
+                end
+                if(frame.debugMode)
                         fprintf("nbFrames: %d, size_color: %d, size_depth: %d\n", frame.nbFrames, length(frame.file_color_original.df),length(frame.file_depth_original.df))
-                    end
                 end
             end
 
@@ -179,12 +179,12 @@ classdef getFrames
                     fprintf("Index: %d\n", frame.file_index);
                 end
 
-                if frame.saveType=="jan"
-                    depth=frame.file_video(frame.file_index).original_depth;
-                    color=frame.file_video(frame.file_index).color;
-                elseif frame.saveType=="mahel"
+                if frame.saveType=="mahel"
                     depth = frame.file_color_original(frame.file_index).df;
                     color = frame.file_depth_original(frame.file_index).df;
+                elseif frame.saveType=="jan"
+                    depth=frame.file_video(frame.file_index).original_depth;
+                    color=frame.file_video(frame.file_index).color;
                 end
 
                 frame.file_index = frame.file_index+1;
@@ -192,6 +192,25 @@ classdef getFrames
                 if(frame.file_index == frame.nbFrames)
                     frame.isActive = 0;
                     fprintf("End of video.\n");
+                end
+
+            end
+
+        end
+
+        function [frame,depth,color] = get_frame_at_index(frame, indexFrame)
+            if(frame.type=="camera")
+                error("This function can't be used when getting frames from the camera.");
+
+            else
+                % Get frame from file
+
+                if frame.saveType=="mahel"
+                    depth = frame.file_color_original(indexFrame).df;
+                    color = frame.file_depth_original(indexFrame).df;
+                elseif frame.saveType=="jan"
+                    depth=frame.file_video(indexFrame).original_depth;
+                    color=frame.file_video(indexFrame).color;
                 end
 
             end
