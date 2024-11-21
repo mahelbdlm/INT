@@ -60,7 +60,7 @@ function [pipeline, profile]=connectDepth(varargin)
 %     saying it wasn't able to resolve...(!)
     config.enable_stream(realsense.stream.depth,0,WIDTH,HEIGHT,realsense.format.z16,FPS);
 
-    config.enable_stream(realsense.stream.color, realsense.format.rgba8);
+    config.enable_stream(realsense.stream.color,0,WIDTH,HEIGHT, realsense.format.rgba8,FPS);
 % 
 %     // Start the pipeline streaming
 %     // The retunred object should be released with rs2_delete_pipeline_profile(...)
