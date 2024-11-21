@@ -13,6 +13,12 @@ Schematic circuit:
     <img height="60%" width="60%" alt="Image from matlab" src="https://docs.arduino.cc/static/ab1a1fcdc08dc7e8a5cec48a5b705cbc/0a47e/bipolarKnob_schms.png">
 </div>-->
 
+Correa: 
+https://www.amazon.es/gp/product/B0CPWPDF9W/
+
+Polia:
+https://www.amazon.es/gp/product/B07QWLQ57R/
+
 Datasheet of bipolar stepper motor
 [Datasheet](https://www.oyostepper.com/images/upload/File/17HS19-2004S1.pdf)
 
