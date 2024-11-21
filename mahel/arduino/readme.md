@@ -13,8 +13,11 @@ Schematic circuit:
     <img height="60%" width="60%" alt="Image from matlab" src="https://docs.arduino.cc/static/ab1a1fcdc08dc7e8a5cec48a5b705cbc/0a47e/bipolarKnob_schms.png">
 </div>-->
 
-Correa: 
+Correa 5m: 
 https://www.amazon.es/gp/product/B0CPWPDF9W/
+
+Correa 10m
+https://www.amazon.es/TUZUK-Impresora-distribuci%C3%B3n-sincr%C3%B3nica-impresora/dp/B0C54ZPFJ1/ref=pd_day0_d_sccl_3_6/260-0942596-1492536
 
 Polia:
 https://www.amazon.es/gp/product/B07QWLQ57R/
