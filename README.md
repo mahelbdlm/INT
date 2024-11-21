@@ -12,9 +12,11 @@ This project will be divided into two distinct parts:
 
 1. Detection of the palet from below
 2. Detection of the palet from the sides
+
 More information about each section will be provided below. 
 
-Due to budget cuts in our project, only two out of three cameras will be available. One will be placed below the palet, and the other on one side. 
+> [!WARNING]
+> Due to budget cuts in our project, only two out of three cameras will be available. One will be placed below the palet, and the other on one side. 
 
 <details>
 
