@@ -46,9 +46,33 @@ One camera will capture the palet using this angle. This will help us identify t
    - Detecting the squares of the palet, we can identify if the palet is european
 2. Missing panel
 
-> [!IMPORTANT]
-> The script will be able to identify if it is a european palet. As we don't have an american palet available, the correct identification of an american palet is not assured.
 ## Detection of the palet from below
 <div align="center">
     <img height="30%" width="30%" alt="Image" src="https://github.com/user-attachments/assets/39c15630-afaa-466e-b110-62b829ce1f09">
 </div>
+
+# PROTOTYPE
+This code will be used with a physical prototype. 
+Below is a detail of all the material used in order to mount the prototype: 
+
+| Element | Units | Price(total) | Reference/link |
+| ------------- | ------------- | ------------- | ------------- |
+| Realsense D435i depth cam | 2 | 668 | [link](https://store.intelrealsense.com/buy-intel-realsense-depth-camera-d435i.html) |
+| Alum. profile 30x30 2m | 5 | 201.45 | [link](https://es.rs-online.com/web/p/tubos-y-perfiles/2647863) |
+| Alum. profile 30x30 1m | 4 | 84.4 | [link](https://es.rs-online.com/web/p/tubos-y-perfiles/2647862?gb=s) |
+| Alum. corner connection | 20 | 160.4 | [link](https://es.rs-online.com/web/p/componentes-de-conexion/3901798?gb=s) |
+| Hammer-head M6 nut | 30 | 23.91 | [link](https://es.rs-online.com/web/p/componentes-de-conexion/2768170?gb=s) |
+| M6 Allen screw 20mm | 50 | 24.49 | [link](https://es.rs-online.com/web/p/tornillos-allen/4839688?gb=a) |
+| 80mm wheels | 5 | 44.15 | [link](https://es.rs-online.com/web/p/ruedas-industriales/6679463?gb=s) |
+| M6 Allen screw 10mm | 20 | 17.92 | [link](https://es.rs-online.com/web/p/tornillos-allen/8741021) |
+| Alum. lateral connection  | 4 | 95.44| [link](https://es.rs-online.com/web/p/componentes-de-conexion/3902000) |
+| LED 5m strip | 1 | 86.89 | [link](https://es.rs-online.com/web/p/tiras-de-led/1533661?searchId=c3c85c20-2f5b-480a-a57e-2065bbc26e84&gb=s) |
+
+To be determined:
+| Element | Units | Price(total) | Reference/link |
+| ------------- | ------------- | ------------- | ------------- |
+| Steper motor | 1 |  |  |
+| Steper motor belt | 1 |  |  |
+| Polea dentada | 1 |  |  |
+
+TODO: Include photos of the prototype.
