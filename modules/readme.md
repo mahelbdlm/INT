@@ -10,8 +10,9 @@ This allows to have the same code for treating data, and be able to switch rapid
 
 | Function  | Description |
 | ------------- | ------------- |
-| ```frame = getFrames();```<br/>```frame = getFrames("camera");```  | Define the frame class to load frames from the camera |
-| ```frame = getFrames("mahel/save/palet_con_rodillos4");```  | Define the frame class to load frames from the folder ```mahel/save/palet_con_rodillos4```|
+| ```frame = getFrames();```<br/>```frame = getFrames("camera");```<br/>```frame = getFrames("camera", "jan");```  | Define the frame class to load frames from the camera |
+| ```frame = getFrames("mahel/save/palet_con_rodillos4");```<br/>```frame = getFrames("mahel/save/palet_con_rodillos4", "mahel");```  | Define the frame class to load frames from the folder ```mahel/save/palet_con_rodillos4```|
+| ```frame = getFrames(pathToFolder, "jan");```  | Define the frame class to load frames from the file in _jan_ saving format |
 | ```frame = setDepthHighAccuracy();``` | Enable the depth high accuracy |
 | ```frame = setWidthAndHeight(width, height);``` | Define custom width and height |
 | ```frame = setFPS(fps);``` | Define custom fps |

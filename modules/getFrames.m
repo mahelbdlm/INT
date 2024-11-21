@@ -2,7 +2,7 @@
 % based on the parameters defined by the user
 % INPUT: Desired path
 % OUTPUT: output.pipeline and output.profile
-% Last modification: 14/11/2024
+% Last modification: 21/11/2024
 
 classdef getFrames
     properties
@@ -16,24 +16,34 @@ classdef getFrames
         cameraPipeline
         cameraProfile
         file_color_original
+        file_video
         file_index
         file_depth_original
         nbFrames
         debugMode
+        saveType
     end
     methods
         % CONSTRUCTOR
-        function frame = getFrames(cameraOrPath)
+        function frame = getFrames(varargin)
             if nargin == 0
                 frame.type = "camera";
-            elseif nargin == 1
-                if(cameraOrPath=="camera" || cameraOrPath=="" || cameraOrPath=="cam")
+            elseif nargin >= 1
+                if(varargin{1}=="camera" || varargin{1}=="" || varargin{1}=="cam")
                     frame.type = "camera";
                 else
                     frame.type = "local";
-                    frame.path = cameraOrPath;
+                    frame.path = varargin{1};
                 end
             end
+
+            if(nargin>=2 && varargin{2}~="")
+                frame.saveType=varargin{2};
+            else
+                %Default saving format is "mahel"
+                frame.saveType="mahel";
+            end
+
             frame.depthHighAccuracy = 0;
             frame.userDefinedWidth = 640;
             frame.userDefinedHeight = 480;
@@ -127,13 +137,19 @@ classdef getFrames
             else
                 % Get frame from video
                 path_checked=checkPath(frame.path); % Check if the user is on the right folder for the path
-                frame.file_color_original= load(path_checked+"/video_color_original.mat").video_color_original;
                 frame.file_index = 1;
-                frame.nbFrames = 1;
-                frame.file_depth_original= load(path_checked+"/video_depth_original.mat").video_depth_original;
+                if frame.saveType=="jan"
+                    frame.file_video= load(path_checked+"/video1.mat").video;
+                    frame.nbFrames = length(frame.file_video);
+ 
+                elseif frame.saveType=="mahel"
+                    frame.file_color_original= load(path_checked+"/video_color_original.mat").video_color_original;
+                    frame.nbFrames = length(frame.file_color_original);
+                    frame.file_depth_original= load(path_checked+"/video_depth_original.mat").video_depth_original;
 
-                if(frame.debugMode)
-                    fprintf("nbFrames: %d, size_color: %d, size_depth: %d\n", frame.nbFrames, length(frame.file_color_original.df),length(frame.file_depth_original.df))
+                    if(frame.debugMode)
+                        fprintf("nbFrames: %d, size_color: %d, size_depth: %d\n", frame.nbFrames, length(frame.file_color_original.df),length(frame.file_depth_original.df))
+                    end
                 end
             end
 
@@ -163,8 +179,13 @@ classdef getFrames
                     fprintf("Index: %d\n", frame.file_index);
                 end
 
-                depth = frame.file_color_original(frame.file_index).df;
-                color = frame.file_depth_original(frame.file_index).df;
+                if frame.saveType=="jan"
+                    depth=frame.file_video(frame.file_index).original_depth;
+                    color=frame.file_video(frame.file_index).color;
+                elseif frame.saveType=="mahel"
+                    depth = frame.file_color_original(frame.file_index).df;
+                    color = frame.file_depth_original(frame.file_index).df;
+                end
 
                 frame.file_index = frame.file_index+1;
 

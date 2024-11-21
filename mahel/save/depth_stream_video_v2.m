@@ -5,14 +5,14 @@
 
 clear f;
 close all;
-targetPath = "mahel/detect_missing_part/missing_splinter1"; % Path of the video file
+targetPath = "mahel/detect_missing_part/test_jan"; % Path of the video file
                                                % Camera if you want to use
                                                % the camera
 
 % Connect with default configuration
 try
-    frame = getFrames(targetPath); % The frames will be obtained using the camera
-    frame = frame.enableDebugMode();
+    frame = getFrames(targetPath,"jan"); % The frames will be obtained using the camera
+    %frame = frame.enableDebugMode();
     %frame = frame.depthHighAccuracy(); % Set the high accuracy for the camera
     %frame = frame.setWidthAndHeight(640,480); % Set the high accuracy for the camera
     frame = frame.init(); % Initialize the frame class
@@ -70,7 +70,7 @@ try
 catch error
     % Error handling
     if error.identifier == "MATLAB:UndefinedFunction"
-        if contains(error.message, 'connectDepth') || contains(error.message, 'dist_3d')
+        if contains(error.message, 'connectDepth') || contains(error.message, 'getFrames')
             fprintf(2, "The modules folder was not added to your matlab path.\nIt has now been added, you just need to rerun the code.\n");
             addpath('modules');
             %addpath(genpath('modules')) %Add Folder and Its Subfolders to Search Path
