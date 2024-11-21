@@ -2,16 +2,22 @@
 This part of the project uses an Arduino UNO 3 to control a stepper motor for the prototipe.
 This will allow us to move the palet/camera at a constant speed, thus improving the output result.
 
-Based on [Arduino docs](https://docs.arduino.cc/learn/electronics/stepper-motors/)
-
-https://content.instructables.com/FTV/A7LY/IG8999RT/FTVA7LYIG8999RT.jpg?auto=webp&frame=1&width=1024&fit=bounds&md=MjAxNS0xMC0yNiAxMzoxMToxNy4w
-
-https://www.instructables.com/ARDUINO-stepper-motor-controlled-with-rotary-encod/
+Based on [Arduino docs](https://docs.arduino.cc/learn/electronics/stepper-motors/) and [instructables](https://www.instructables.com/ARDUINO-stepper-motor-controlled-with-rotary-encod/)
 
 Schematic circuit: 
 <div align="center">
-    <img height="60%" width="60%" alt="Image from matlab" src="https://docs.arduino.cc/static/ab1a1fcdc08dc7e8a5cec48a5b705cbc/0a47e/bipolarKnob_schms.png">
+    <img height="60%" width="60%" alt="Image from matlab" src="https://content.instructables.com/FTV/A7LY/IG8999RT/FTVA7LYIG8999RT.jpg?auto=webp&frame=1&width=1024&fit=bounds&md=MjAxNS0xMC0yNiAxMzoxMToxNy4w">
 </div>
+
+<!--<div align="center">
+    <img height="60%" width="60%" alt="Image from matlab" src="https://docs.arduino.cc/static/ab1a1fcdc08dc7e8a5cec48a5b705cbc/0a47e/bipolarKnob_schms.png">
+</div>-->
+
+Correa: 
+https://www.amazon.es/gp/product/B0CPWPDF9W/
+
+Polia:
+https://www.amazon.es/gp/product/B07QWLQ57R/
 
 Datasheet of bipolar stepper motor
 [Datasheet](https://www.oyostepper.com/images/upload/File/17HS19-2004S1.pdf)
