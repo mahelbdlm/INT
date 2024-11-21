@@ -180,8 +180,8 @@ classdef getFrames
                 end
 
                 if frame.saveType=="mahel"
-                    depth = frame.file_color_original(frame.file_index).df;
-                    color = frame.file_depth_original(frame.file_index).df;
+                    color = frame.file_color_original(frame.file_index).df;
+                    depth = frame.file_depth_original(frame.file_index).df;
                 elseif frame.saveType=="jan"
                     depth=frame.file_video(frame.file_index).original_depth;
                     color=frame.file_video(frame.file_index).color;
@@ -206,8 +206,8 @@ classdef getFrames
                 % Get frame from file
 
                 if frame.saveType=="mahel"
-                    depth = frame.file_color_original(indexFrame).df;
-                    color = frame.file_depth_original(indexFrame).df;
+                    color = frame.file_color_original(indexFrame).df;
+                    depth = frame.file_depth_original(indexFrame).df;
                 elseif frame.saveType=="jan"
                     depth=frame.file_video(indexFrame).original_depth;
                     color=frame.file_video(indexFrame).color;
