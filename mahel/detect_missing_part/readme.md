@@ -16,7 +16,24 @@ This code tries to detect the pallet. This will be especially useful to identify
 | ```bwFilled = imfill(bwImg, 'holes');```  | Fill holes (0's) by 1's |![image](https://github.com/user-attachments/assets/b6770dc7-05a9-4167-ae0b-af60c918a79e)|
 | ```edges = edge(bwFilled, 'canny');```  | Uses canny edge detection algorithm |![image](https://github.com/user-attachments/assets/ff6ac517-c8bf-4611-b558-f44a0a6f6b1a)|
 | ```[H,T,R]=hough(edges);```  | Perform a Hough transformation on the binary file to identify straight lines ||
-| ``` P  = houghpeaks(H,1,'threshold',ceil(0.3*max(H(:))));```<br/><br/>```lines = houghlines(bwFilled,T,R,P,'FillGap',5,'MinLength',7);```  | houghpeaks identifies the most prominent lines (peaks in H)<br/><br/>houghlines extracts the line segments corresponding to these peaks. |![image](https://github.com/user-attachments/assets/9c9871b2-df31-4a6e-9a7a-7a95f4611407)|
+| ``` P  = houghpeaks(H,1,'threshold',ceil(0.3*max(H(:))));```<br/><br/>```lines = houghlines(bwFilled,T,R,P,'FillGap',5,'MinLength',7);```  | We are only identifying one peak with a value of at least 0.3 times the highest value of the map.<br/>Then, we exctract the lines from this peak.<br/> If two lines have a separation of less than 5, they merge into one line.<br/>The minimum length for a line to be considered is 7. |![image](https://github.com/user-attachments/assets/9c9871b2-df31-4a6e-9a7a-7a95f4611407)|
+
+
+#### More information about houghPeak and houghLine
+Depending on the values of the number of peaks, threshold, fillGap and minLength, the results can vary greatly. 
+To illustrate this, the following parameters have been set on the same image. 
+It can be observed that finding the correct value is crucial in order to have a good result, as much as having a good quality image.
+> [!NOTE]
+> The number of lines is not equal to the number of peaks. One peak can highlight different lines.
+
+
+| Function  | Image result |
+| ------------- | ------------- |
+| ``` houghpeaks(H,1,'threshold',ceil(0.3*max(H(:))));```<br/><br/>```houghlines(bwFilled,T,R,P,'FillGap',1,'MinLength',7);``` |![image](https://github.com/user-attachments/assets/826a3457-7028-408a-afca-c0fbd3bd3486)|
+| ``` houghpeaks(H,1,'threshold',ceil(0.3*max(H(:))));```<br/><br/>```houghlines(bwFilled,T,R,P,'FillGap',10,'MinLength',7);```<br/><br/>We are now increasing the value of the gap for two lines to merge |![image](https://github.com/user-attachments/assets/8cf31c08-b408-41ca-b20b-8bfadeabcd0a)|
+| ``` houghpeaks(H,10,'threshold',ceil(0.3*max(H(:))));```<br/><br/>```houghlines(bwFilled,T,R,P,'FillGap',10,'MinLength',7);```<br/><br/>We are now finding 10 peaks|![image](https://github.com/user-attachments/assets/53e18393-e0c5-4f14-9f3d-57c0f359ba20)|
+| ``` houghpeaks(H,10,'threshold',ceil(0.8*max(H(:))));```<br/><br/>```houghlines(bwFilled,T,R,P,'FillGap',10,'MinLength',7);```<br/><br/>We are now finding 10 peaks with threshold 0.8<br/>Note how the lines are now larger, this is because the higher<br/> the value of the peak, the larger the line |![image](https://github.com/user-attachments/assets/0493c1c7-160a-45fe-81b8-b0e50ff9316f)|
+| ``` houghpeaks(H,10,'threshold',ceil(0.8*max(H(:))));```<br/><br/>```houghlines(bwFilled,T,R,P,'FillGap',10,'MinLength',50);```<br/><br/>Now, only lines larger than 50 are shown.<br/>Note that this reduces greatly the numbe of results.<br/>We must take care with this value, as our line is not perfect,<br/> and thus we won't be able to select very large lines to detect the pallet. |![image](https://github.com/user-attachments/assets/5115b525-9f7c-4921-9fc1-15a616d70db7)|
 
 ### ROTATE, RESIZE IMAGE
 | Function  | Description | Image result |
