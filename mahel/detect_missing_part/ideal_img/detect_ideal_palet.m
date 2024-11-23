@@ -1,107 +1,81 @@
 % Very much based on Jan's detectEdge script
 % Last modification: 23/11/2024
 
+
 %THIS CODE IS STILL IN DEVELOPPMENT. IT IS NOT 100% FUNCTIONAL AND IS USED
 %TO RUN SOME TESTS
 
 
-
-
-
 clear;
 close all;
-targetPath = "mahel/detect_missing_part/missing_splinter2"; % Path of the video file
+plotSubLines = 0;
+plotRectangle = 1;
 % Camera if you want to use
 % the camera
 
 % Connect with default configuration
 try
-    frame = getFrames(targetPath,"mahel"); % The frames will be obtained using the camera and mahel file format
-    frame = frame.init(); % Initialize the frame class
-    [frame,depth,color] = frame.get_frame_at_index(80);
+    color = imread("mahel/detect_missing_part/ideal_img/palet_ideal.jpg");
 
-    %imgclosed=imclose(depth(:,:,1),strel('disk',5));
-    %grayImg=medfilt2(imgclosed,[20 20],'symmetric');
-
-    grayImg = rgb2gray(color); % For color image
+    grayImg = rgb2gray(color);
     %bwImg = imbinarize(grayImg, 'adaptive', 'Sensitivity', 0.5);
     bwImg = imbinarize(grayImg,"adaptive","ForegroundPolarity","dark");
-
-    bwFilled = imfill(bwImg, 'holes');
-    edges = edge(bwImg, 'canny');
-    %edges = edge(bwFilled, 'canny');
-
-
-    %%% To do: 
-    smoothedImage = imgaussfilt(grayImg, 6); % Adjust sigma as needed
-    edges = edge(smoothedImage, 'canny');
-
-
-    % se = strel('line', 5, 0); % Structuring element for morphological operations
-    % edges = imdilate(edges, se); % Dilate the edge image
-    % edges = imerode(edges, se);  % Erode to restore original shape
-    % 
-    % smoothedImage = imgaussfilt(grayImg, 2); % Adjust sigma as needed
-    % edges = edge(smoothedImage, 'canny');
-    %%%
+    %bwFilled = imfill(bwImg, 'holes');
+    bwFilled = bwImg;
+    edges = edge(bwFilled, 'canny');
 
 
     [H,T,R]=hough(edges);
 
-    P  = houghpeaks(H,50,'threshold',ceil(0.5*max(H(:))));
+    P  = houghpeaks(H,2,'threshold',ceil(0.5*max(H(:))));
     %numPeaks (after H): Maximum number of peaks to detect
     %ceil(xx*max...): Minimum value to be considered a peak
-    % The larger the line, the higher the peak. By filtering to a high
-    % value, we select the largest lines
 
-    lines = houghlines(edges,T,R,P,'FillGap',150,'MinLength',3);
+    lines = houghlines(edges,T,R,P,'FillGap',5,'MinLength',3);
     %fillGap: Distance between 2 lines to be considered a single line
     % minLength: minimum length for the line to be accepted
 
+    if plotSubLines
+        figure, imshow(edges), hold on
+        max_len = 0;
+        for k = 1:length(lines)
+            xy = [lines(k).point1; lines(k).point2];
+            plot(xy(:,1),xy(:,2),'LineWidth',2,'Color','green');
 
-    figure, imshow(edges), hold on
-    max_len = 0;
-    for k = 1:length(lines)
-        xy = [lines(k).point1; lines(k).point2];
-        plot(xy(:,1),xy(:,2),'LineWidth',2,'Color','green');
+            % Plot beginnings and ends of lines
+            plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','yellow');
+            plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','red');
 
-        % Plot beginnings and ends of lines
-        plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','yellow');
-        plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','red');
-
-        % Determine the endpoints of the longest line segment
-        len = norm(lines(k).point1 - lines(k).point2);
-        if ( len > max_len)
-            max_len = len;
-            xy_long = xy;
+            % Determine the endpoints of the longest line segment
+            len = norm(lines(k).point1 - lines(k).point2);
+            if ( len > max_len)
+                max_len = len;
+                xy_long = xy;
+            end
         end
-    end
-    % highlight the longest line segment
-    plot(xy_long(:,1),xy_long(:,2),'LineWidth',2,'Color','red');
+        % highlight the longest line segment
+        plot(xy_long(:,1),xy_long(:,2),'LineWidth',2,'Color','red');
 
-    % xy = [lines(1).point1; lines(2).point1];
-    % plot(xy(:,1),xy(:,2),'LineWidth',2,'Color','blue');
-    % 
-    % xy = [lines(1).point2; lines(2).point2];
-    % plot(xy(:,1),xy(:,2),'LineWidth',2,'Color','blue');
+        xy = [lines(1).point1; lines(2).point1];
+        plot(xy(:,1),xy(:,2),'LineWidth',2,'Color','blue');
+
+        xy = [lines(1).point2; lines(2).point2];
+        plot(xy(:,1),xy(:,2),'LineWidth',2,'Color','blue');
+    end
+
+    if plotRectangle
+        figure, imshow(edges), hold on
+        % Reorganize the corners in a cyclic order to form a rectangle
+        rectangleCorners = [lines(1).point1; lines(1).point2; lines(2).point2; lines(2).point1; lines(1).point1];
+        % Plot the rectangle
+        plot(rectangleCorners(:,1), rectangleCorners(:,2), 'r-', 'LineWidth', 2);
+        % Highlight the corners
+        scatter(rectangleCorners(:,1), rectangleCorners(:,2), 50, 'red', 'filled');
+        title('Detected Rectangle');
+        hold off;
+    end
 
     return;
-
-
-
-
-
-    [H,T,R]=hough(edges);
-    P  = houghpeaks(H,1,'threshold',ceil(0.3*max(H(:))));
-    lines = houghlines(bwFilled,T,R,P,'FillGap',5,'MinLength',7);
-
-    imshow(color,[]),hold on
-    xy = [lines(1).point1; lines(1).point2];
-    plot(xy(:,1),xy(:,2),'LineWidth',2,'Color','green');
-    % plot beginnings and ends of lines
-    plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','yellow');
-    plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','red');
-    hold off;
 
 
     I=imrotate(color,90+lines(1).theta);
@@ -273,7 +247,7 @@ catch error
     % Error handling
     if error.identifier == "MATLAB:UndefinedFunction"
         if contains(error.message, 'connectDepth') || contains(error.message, 'getFrames')
-            fprintf(2, "The modules folder was not added to your matlab path.\nIt has now been added and the code execution was restarted.\n");
+           fprintf(2, "The modules folder was not added to your matlab path.\nIt has now been added and the code execution was restarted.\n");
             addpath('modules');
             run(mfilename+".m");
             %addpath(genpath('modules')) %Add Folder and Its Subfolders to Search Path
