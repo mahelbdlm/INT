@@ -1,3 +1,7 @@
+//Simpler version of the arduino_stepper_motor, in the commented area there's the serial functions 0, 1 & 2
+//to turnOn (lock), turnOff and spin indefinitely until 0 is sent, respectively
+//Added code to implement a push-button to activate the motor and a potentiometer 100K to vary the rpm.
+//Also added potentiometer 1K to the 12V supply for control.
 #include <Stepper.h>
 
 int val = 0;
