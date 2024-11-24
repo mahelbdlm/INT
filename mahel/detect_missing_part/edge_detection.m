@@ -10,7 +10,7 @@
 
 clear;
 close all;
-targetPath = "mahel/detect_missing_part/missing_splinter2"; % Path of the video file
+targetPath = "mahel/detect_missing_part/missing_splinter1"; % Path of the video file
 % Camera if you want to use
 % the camera
 
@@ -18,12 +18,14 @@ targetPath = "mahel/detect_missing_part/missing_splinter2"; % Path of the video 
 try
     frame = getFrames(targetPath,"mahel"); % The frames will be obtained using the camera and mahel file format
     frame = frame.init(); % Initialize the frame class
-    [frame,depth,color] = frame.get_frame_at_index(80);
+    [frame,depth,color] = frame.get_frame_at_index(125);
+    imshow(color);
 
     %imgclosed=imclose(depth(:,:,1),strel('disk',5));
     %grayImg=medfilt2(imgclosed,[20 20],'symmetric');
 
     grayImg = rgb2gray(color); % For color image
+    return;
     %bwImg = imbinarize(grayImg, 'adaptive', 'Sensitivity', 0.5);
     bwImg = imbinarize(grayImg,"adaptive","ForegroundPolarity","dark");
 
