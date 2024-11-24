@@ -1,6 +1,9 @@
 # ALIGN DEPTH RGB
 The scripts in this folder try to match the RGB and depth camera data by applying photoshop-like resizing, and distortionning.
 
+> [!CAUTION]
+> These codes won't be used as we realized the camera itself has an alignment function.
+
 # TEST_ALL_ALIGN
 This code uses the realsense integrated _align_to_ function to align the depth and color sensor. 
 <details>
