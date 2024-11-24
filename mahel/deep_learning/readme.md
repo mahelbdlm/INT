@@ -16,3 +16,8 @@ Then, we can use the active contours tool to refine the image:
 |Resion based|100|![image](https://github.com/user-attachments/assets/6d9c2c9f-d183-4374-bc76-d3385e332ec4)|
 |Edge based|100|![image](https://github.com/user-attachments/assets/f76e5214-f939-43be-8f62-ff8a66718c25)|
 |Edge based|200|![image](https://github.com/user-attachments/assets/a31bd490-43b7-4fc5-9394-fedcd50291e8)|
+
+Exporting the script and running it, we obtain: 
+<div align="center">
+  <img width="60%" height="60%" src="https://github.com/user-attachments/assets/868fd7c2-aebe-4539-b90e-ae050cbedb08"></img>
+</div>
