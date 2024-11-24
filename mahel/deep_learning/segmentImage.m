@@ -117,8 +117,8 @@ BW = BW | BWout;
 
 
 % Active contour
-iterations = 100;
-BW = activecontour(X, BW, iterations, 'edge');
+%iterations = 100;
+%BW = activecontour(X, BW, iterations, 'edge');
 
 % Create masked image.
 maskedImage = X;

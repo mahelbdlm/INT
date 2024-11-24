@@ -25,7 +25,6 @@ try
     %grayImg=medfilt2(imgclosed,[20 20],'symmetric');
 
     grayImg = rgb2gray(color); % For color image
-    return;
     %bwImg = imbinarize(grayImg, 'adaptive', 'Sensitivity', 0.5);
     bwImg = imbinarize(grayImg,"adaptive","ForegroundPolarity","dark");
 
@@ -35,7 +34,7 @@ try
 
 
     %%% To do: 
-    smoothedImage = imgaussfilt(grayImg, 6); % Adjust sigma as needed
+    smoothedImage = imgaussfilt(grayImg, 4); % Adjust sigma as needed
     edges = edge(smoothedImage, 'canny');
 
 
@@ -50,7 +49,7 @@ try
 
     [H,T,R]=hough(edges);
 
-    P  = houghpeaks(H,50,'threshold',ceil(0.5*max(H(:))));
+    P  = houghpeaks(H,50,'threshold',ceil(0.7*max(H(:))));
     %numPeaks (after H): Maximum number of peaks to detect
     %ceil(xx*max...): Minimum value to be considered a peak
     % The larger the line, the higher the peak. By filtering to a high
