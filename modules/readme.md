@@ -2,10 +2,95 @@
 This folder contains modules necessary for the correct behaviour of some programs.
 Below is detailed the purpose of each file.
 
+## GET_FRAMES
+This script defines a class called getFrames. It allows to load rapidly frames, whether it's from the camera or a stored file. 
+The getFrames class is called in the same manner if you want to load from the camera or a file.
+This allows to have the same code for treating data, and be able to switch rapidly to the desired input mode.
+
+
+| Function  | Description |
+| ------------- | ------------- |
+| ```frame = getFrames();```<br/>```frame = getFrames("camera");```<br/>```frame = getFrames("camera", "jan");```  | Define the frame class to load frames from the camera |
+| ```frame = getFrames("mahel/save/palet_con_rodillos4");```<br/>```frame = getFrames("mahel/save/palet_con_rodillos4", "mahel");```  | Define the frame class to load frames from the folder ```mahel/save/palet_con_rodillos4```|
+| ```frame = getFrames(pathToFolder, "jan");```  | Define the frame class to load frames from the file in _jan_ saving format (default is _mahel_) |
+| ```frame = setDepthHighAccuracy();``` | Enable the depth high accuracy |
+| ```frame = setWidthAndHeight(width, height);``` | Define custom width and height |
+| ```frame = setFPS(fps);``` | Define custom fps |
+| ```frame = enableDebugMode();``` | Enable the debug mode. This will show messages about each state to the console. Don't forget to ```clc``` it after! |
+| ```frame = frame = init();``` | Initialize the frame class. This step is mandatory as it is when the camera pipe is created / the files are loaded |
+| ```[frame,depth,color] = get_frame_original(frame);``` | Returns _depth_original_ and _color_original_ already in image format |
+| ```frame.stop()``` | Corresponds to the ```pipe.stop()``` of the realsense code |
+
+<details>
+
+<summary>Understand jan and mahel format</summary>
+
+Due to the limitations in terms of performance and sizes available to upload in github, two saving formats have been defined.
+The getFrames class intends to simplify the use of them. 
+
+jan format: 
+This format intends to save all data to one .mat file. This includes color, depth but also fps and time for each frame.
+
+mahel format: 
+This format splits each section onto separate files. This allows for smaller files, which can easily be uploaded through github.
+It does not yet include fps and time for each frame.
+
+</details>
+
+<details>
+
+<summary>EXAMPLE CODE WITH CAMERA</summary>
+
+```matlab
+frame = getFrames(); % Create frame to use camera
+frame = frame.init(); % Calling the init function is mandatory
+
+while (frame.isActive)
+   % Wait for a new frame set
+   disp("Getting frame");
+
+   [frame,depth,color] = frame.get_frame_original(); % Get the frame
+
+   color_img_resized = imresize(color, [480, 640]);
+
+   imshowpair(depth,color_img_resized,"montage");
+end
+```
+Switching from camera to file is as easy as replacing ```frame = getFrames();``` to ```frame = getFrames("mahel/save/palet_con_rodillos4");```
+
+</details>
+
+<details>
+
+<summary>EXAMPLE CODE WITH FILE</summary>
+
+```matlab
+targetPath = "mahel/save/palet_con_rodillos4";
+frame = getFrames(targetPath); %Create frame to use file at path
+frame = frame.init(); % Calling the init function is mandatory
+
+while (frame.isActive)
+   % Wait for a new frame set
+   disp("Getting frame");
+
+   [frame,depth,color] = frame.get_frame_original(); % Get the frame
+
+   color_img_resized = imresize(color, [480, 640]);
+
+   imshowpair(depth,color_img_resized,"montage");
+end
+```
+Switching from file to camera is as easy as replacing ```frame = getFrames("mahel/save/palet_con_rodillos4");``` to ```frame = getFrames();```
+
+</details>
+
 ## connectDepth
 This file connects the relasense camera and returns a pipe.
 This function is customizable, using variable number of inputs (varargin, nargin).
 For more information on varargin, visit [matlab site](https://mathworks.com/help/matlab/ref/varargin.html) or ask a fellow student.
+
+> [!WARNING]
+> This script is now included in the getFrames class. You may still use it in your code, but it is advised to use the class instead as this script won't be receiving new updates.
 
 ```pipe=connectDepth(a,b,c,d);```
 | Variable  | Description |
@@ -23,5 +108,8 @@ Below are some examples of utilization:
 | ```pipe=connectDepth(1,60);```  | Connect with high accuracy and 60 fps  |
 | ```pipe=connectDepth(0,60,640,480);```  | Connect without high accuracy, at 60 fps with width 640 and height 480  |
 
-## saveToPLY
-Save file to PLY format in order to be used by the lidar apps from matlab
+## checkPath
+This function ensures the user has the right folder selected, or calculates the right relative path to this folder. 
+If the user is outside the INT folder, or inside ```/folder2``` when the path is ```/folder1/subfolder1```, the function returns an error.
+
+You may use this script at any time to check if the user is in the right matlab path folder. 

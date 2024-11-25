@@ -1,11 +1,2 @@
-## Measure
-This folder contains code that can measure distances using the realsense depth sensor. 
-
-## Save to ply
-Save 3D information to PLY format
-
-## Img
-Images used in the md files
-
-## V1 doesnotwork
-Don't open that!
+Links of interest: 
+[Github MD syntax](https://docs.github.com/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#relative-links)

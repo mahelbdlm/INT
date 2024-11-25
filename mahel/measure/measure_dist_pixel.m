@@ -1,9 +1,10 @@
 % Measure real-world depth data and allow pixel selection for distance measurement
+% Based on https://dev.intelrealsense.com/docs/rs-measure
 % Last modification: 09/11/2024 18:05
 
 clear f;
+clear;
 close all;
-debug_mode = 0;
 
 % Connect with default configuration
 try
@@ -128,9 +129,11 @@ try
     
 catch error
     % Error handling
-    if error.identifier == "MATLAB:UndefinedFunction"
+     if error.identifier == "MATLAB:UndefinedFunction"
         if contains(error.message, 'connectDepth') || contains(error.message, 'dist_3d')
-            fprintf(2, "You must add the modules folder to the MATLAB path\n  => Right-click on module folder -> add to path -> Selected folder\n");
+            fprintf(2, "The modules folder was not added to your matlab path.\nIt has now been added, you just need to rerun the code.\n");
+            addpath('modules');
+            %addpath(genpath('modules')) %Add Folder and Its Subfolders to Search Path
         else
             rethrow(error);
         end

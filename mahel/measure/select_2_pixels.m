@@ -1,20 +1,22 @@
 % Measure real-world depth data and allow pixel selection for distance measurement
 % Last modification: 09/11/2024 18:05
+% This code is now deprecated and will be updated at https://github.com/mahelbdlm/INT/blob/main/jan/select_2_pixels.m 
 
-%clear;
-debug_mode = 0;
+
+clear f;
 
 % Connect with default configuration
 try
     if ~exist("pipeline", "var")
-        [pipeline, profile] = connectDepth(1); % Connect depth with high accuracy
+        [pipeline, profile] = connectDepth(); % Connect depth with high accuracy
 
         % Initialize filters
         colorizer = realsense.colorizer();
         colorizer.set_option(realsense.option.color_scheme, 2);
     
+        decimationfactor=2;
         decimation = realsense.decimation_filter();
-        decimation.set_option(realsense.option.filter_magnitude, 2);
+        decimation.set_option(realsense.option.filter_magnitude, decimationfactor);
     
         depth2disparity = realsense.disparity_transform(true); % Depth to disparity
         disparity2depth = realsense.disparity_transform(false); % Disparity to depth
@@ -24,7 +26,6 @@ try
     
         temporal = realsense.temporal_filter();
     
-        align_to = realsense.align(realsense.stream.depth);
     end
     
     % Discard the first 10 frames
@@ -55,8 +56,7 @@ try
         depth = frames.get_depth_frame();
         
         if ~isempty(frames)
-            aligned_frames = align_to.process(frames);
-            depth_frame = aligned_frames.get_depth_frame();
+            depth_frame = frames.get_depth_frame();
     
             % Apply filters
             depth_frame = decimation.process(depth_frame);
@@ -64,15 +64,15 @@ try
             depth_frame = spatial.process(disparity_frame);
             depth_frame = temporal.process(depth_frame);
             depth_frame = disparity2depth.process(depth_frame);
-    
+            
             % Colorize depth frame
             colorized_depth = colorizer.colorize(depth_frame);
             
             % Display the colorized depth frame
             img = colorized_depth.get_data();
-            height = depth.get_height();
-            width = depth.get_width();
-            depth_frame_colorized = permute(reshape(colorizer.colorize(depth).get_data()', [3, width, height]), [3, 2, 1]);
+            height = depth.get_height()/decimationfactor;
+            width = depth.get_width()/decimationfactor;
+            depth_frame_colorized = permute(reshape(img', [3, width, height]), [3, 2, 1]);
             imshow(depth_frame_colorized, []);
             title('Select two points to measure distance');
 
@@ -85,26 +85,29 @@ try
             intrinsics = depthProfile.get_intrinsics();
 
             % Prompt user to select two points and ensure they are within valid range
+            % We will work with u/v=[row column],that's why x and y are
+            % swaped
             [x, y] = ginput(2);
-            u = round([x(1), y(1)]); % First point
-            v = round([x(2), y(2)]); % Second point
+            u = round([y(1), x(1)]); % First point
+            v = round([y(2), x(2)]); % Second point
             
-            % Get frame dimensions
-            frame_width = depth.get_width();
-            frame_height = depth.get_height();
+            % Get frame and frame dimensions
+            frame_width = width;
+            frame_height = height;
+            depth_frame_img =reshape(depth_frame.get_data()', [width, height])';
             
             % Ensure points are within valid range
-            if u(1) < 1 || u(1) > frame_width || u(2) < 1 || u(2) > frame_height || ...
-               v(1) < 1 || v(1) > frame_width || v(2) < 1 || v(2) > frame_height
+            if u(1) < 1 || u(1) > frame_height || u(2) < 1 || u(2) > frame_width || ...
+               v(1) < 1 || v(1) > frame_height || v(2) < 1 || v(2) > frame_width
                 error('Selected points are out of the valid range of the depth frame.');
             end
             hold on;
-                % Plot points at (u(1), u(2)) and (v(1), v(2)) on the image
-                plot(u(1), u(2), 'ro', 'MarkerSize', 10);  % Red point for u
-                plot(v(1), v(2), 'bo', 'MarkerSize', 10);  % Blue point for v
+                % Plot points at (u(2), u(1)) and (v(2), v(1)) on the image
+                plot(u(2), u(1), 'ro', 'MarkerSize', 10);  % Red point for u
+                plot(v(2), v(1), 'bo', 'MarkerSize', 10);  % Blue point for v
             hold off;
             % Calculate 3D distance between selected points
-            distance_3d = dist_3d(intrinsics, depth_frame, u, v);
+            distance_3d = measure_3d_dist(u, v,depth_frame_img);
             fprintf('3D distance between selected points: %.2f meters\n', distance_3d);
             return;
 

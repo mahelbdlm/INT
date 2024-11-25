@@ -1,5 +1,6 @@
 # MEASURE
-This folder contains code using the realsense depth sensor in order to obtain distances.
+The files contained in this folder allow to measure distances using the realsense camera.  
+The description of each file is detailed below: 
 
 ## measure_dist_pixel
 This code creates an image using the 3D sensor and prompts you to click on a point in the image in order to obtain the distance. 
@@ -12,7 +13,7 @@ Upon execution, it opens a new figure and waits for the user to left-click on th
 
 <summary>USAGE EXAMPLE</summary>
 
-### Usage example
+Upon executing the code: 
 <div align="center">
     <img height="60%" width="60%" alt="Image from matlab" src="/../main/mahel/img/img1.png?raw=true">
 </div>
@@ -21,10 +22,6 @@ The following configuration was used:
 <div align="center">
     <img height="60%" width="60%" alt="Realsense config" src="/../main/mahel/img/img2.JPEG?raw=true">
 </div>
-
-> [!WARNING]
-> The distance shown can be incorrect due to distorsion from vision angle of the camera
-
 
 Example using a roud bin:
 <div align="center">
@@ -35,19 +32,27 @@ The camera shows correctly the distance changing due to the round nature of the 
 
 </details>
 
+## depth_stream_video
+This code streams from the camera in both depth and rgb image and shows them in a montage. 
+It allows a better visualization of both what the depth camera sees and what the rgb camera sees.
+Note that the RGB data is reshaped to correspond to the sizes of the depth image, and would in reality be much more detailed.
+
+<details>
+
+<summary>USAGE EXAMPLE</summary>
+
+Upon executing the code: 
+<div align="center">
+    <img height="60%" width="60%" alt="Image from matlab" src="/../main/mahel/img/img4.png?raw=true">
+</div>
+As it can be seen in the previous picture, the data from the RGB and depth sensor is shown in a montage. 
+This is particularly useful to observe the difference of vision between the depth and rgb sensor. 
+
+</details>
+
+
 ## select_2_pixel.m
 This code allows to calculate a distance using the depth camera between 2 points, selecting them on the plot.
 
-> [!CAUTION]
-> This code does not work for now.
-
-## depth_stream_video
-This code streams from the camera in both depth and rgb image and shows them in a montage. 
-
-> [!CAUTION]
-> This code does not work for now.
-
-## config_DepthHighAccuracy
-This code is a copy of [connectDepth.m](/../main/modules/connectDepth.m) configuring high-precision mode for the depth sensor.
-Please use [connectDepth.m](/../main/modules/connectDepth.m) with the right parameters instead.
-Information about connectDepth and its parameters: [connectDepth.m](/../main/modules/readme.md)
+> [!NOTE]
+> This code will now be updated [here](/../main/jan/select_2_pixels.m)
