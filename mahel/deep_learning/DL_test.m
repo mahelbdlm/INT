@@ -22,7 +22,8 @@ try
 
     grayImg = rgb2gray(color); % For color image
 
-    [BW,maskedImage] = segmentImage(grayImg);
+
+    [BW,maskedImage] = segmentImage_v2(grayImg);
 
     edges = edge(BW, 'canny');
 
