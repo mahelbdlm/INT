@@ -1,20 +1,16 @@
 % Import video file and work with it
 
-targetPath = "mahel/save/palet_con_rodillos4"; %Target path (respect to INT folder)
+targetPath = "mahel/detect_missing_part/test1"; % Path of the video file
 fps = 30;
 
 try
-    path = checkPath(targetPath);
-    vid_color= load(path+"/video_color_original.mat").video_color_original;
-    vid_depth= load(path+"/video_depth_original.mat").video_depth_original;
+    frame = getFrames(targetPath,"mahel"); % The frames will be obtained using the camera and mahel file format
+    frame = frame.init(); % Initialize the frame class
     
-    imageArr=[];
-    imgindex=1;
-    numberImagesHorizontal = 4;
-    for i=1:length(vid_color)
-        imshow(vid_color(i).df);
+    for i=1:150
+        [frame,depth,color] = frame.get_frame_at_index(i); %125 to work
+        imshow(color, []);
         drawnow;
-        pause(1/fps);
     end
     
     %montage(imageArr,'Size', [round(imgindex/numberImagesHorizontal)-1, numberImagesHorizontal]);

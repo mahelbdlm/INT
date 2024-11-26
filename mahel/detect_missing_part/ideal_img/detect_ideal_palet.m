@@ -22,7 +22,13 @@ try
     bwImg = imbinarize(grayImg,"adaptive","ForegroundPolarity","dark");
     %bwFilled = imfill(bwImg, 'holes');
     bwFilled = bwImg;
-    edges = edge(bwFilled, 'canny');
+
+
+    smoothedImage = imgaussfilt(grayImg, 4); % Adjust sigma as needed
+    edges = edge(smoothedImage, 'canny');
+
+
+    %edges = edge(bwFilled, 'canny');
 
 
     [H,T,R]=hough(edges);

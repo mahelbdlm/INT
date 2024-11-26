@@ -3,7 +3,7 @@
 
 %THIS CODE IS STILL IN DEVELOPPMENT. IT IS NOT 100% FUNCTIONAL AND IS USED
 %TO RUN SOME TESTS
-
+imagesv1Exist=0;
 
 
 
@@ -16,14 +16,31 @@ targetPath = "mahel/detect_missing_part/missing_splinter1"; % Path of the video 
 
 % Connect with default configuration
 try
-    frame = getFrames(targetPath,"mahel"); % The frames will be obtained using the camera and mahel file format
-    frame = frame.init(); % Initialize the frame class
-    [frame,depth,color] = frame.get_frame_at_index(125); %125 to work
+    try
+        BW=imread("mahel/deep_learning/BW.jpg");
+        maskedImage=imread("mahel/deep_learning/masked.jpg");
+        imagesv2Exist=1;
+    catch errorv1
+        imagesv2Exist=0;
+    end
 
-    grayImg = rgb2gray(color); % For color image
+    if(~imagesv2Exist)
+        frame = getFrames(targetPath,"mahel"); % The frames will be obtained using the camera and mahel file format
+        frame = frame.init(); % Initialize the frame class
+        [frame,depth,color] = frame.get_frame_at_index(1); %125 to work
+    
+        grayImg = rgb2gray(color); % For color image
+    
+   
+        tic;
+        [BW,maskedImage] = segmentImage_v3(grayImg);
+        elapsedTime = toc;
 
-
-    [BW,maskedImage] = segmentImage_v2(grayImg);
+        disp(['Elapsed Time: ', num2str(elapsedTime), ' seconds']);
+    
+        imwrite(BW, "mahel/deep_learning/BW.jpg");
+        imwrite(maskedImage, "mahel/deep_learning/masked.jpg");
+    end
 
     edges = edge(BW, 'canny');
 

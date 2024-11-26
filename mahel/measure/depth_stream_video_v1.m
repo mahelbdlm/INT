@@ -98,9 +98,9 @@ try
             
             % Display the RGB image (debug)
             %imshow(color_img);
-            color_img_resized = imresize(color_img, [480, 640]);
+            %color_img_resized = imresize(color_img, [480, 640]);
 
-            imshowpair(depth_frame_colorized,color_img_resized,"montage");
+            imshowpair(depth_frame_colorized,color_img,"montage");
             
         end
         pause(0.1);

@@ -1,28 +1,27 @@
 % This function configurates the realsense camera
 % INPUT: Variable number of inputs (see readme for more info)
 % OUTPUT: output.pipeline and output.profile
-% Last modification: 09/11/2024 11:57
 
 function [pipeline, profile]=connectDepth(varargin)
     switch nargin
         case 0
             %default values
-            highAccuracy    = 0;
+            highDensity    = 0;
             WIDTH          = 640   ;           %// Defines the number of columns for each frame or zero for auto resolve//
             HEIGHT          =480  ;            %// Defines the number of lines for each frame or zero for auto resolve  //
             FPS            = 30   ;            %// Defines the rate of frames per second
         case 1
-            highAccuracy    = varargin{1};
+            highDensity    = varargin{1};
             FPS            = 30   ;  
             WIDTH          = 640   ;           %// Defines the number of columns for each frame or zero for auto resolve//
             HEIGHT          =480  ;            %// Defines the number of lines for each frame or zero for auto resolve  //
         case 2
-            highAccuracy    = varargin{1};
+            highDensity    = varargin{1};
             FPS=varargin{2};
             WIDTH          = 640   ;           %// Defines the number of columns for each frame or zero for auto resolve//
             HEIGHT          =480  ;            %// Defines the number of lines for each frame or zero for auto resolve  //
         case 4
-            highAccuracy    = varargin{1};
+            highDensity    = varargin{1};
             FPS=varargin{2};
             WIDTH=varargin{3};
             HEIGHT=varargin{4};
@@ -66,7 +65,7 @@ function [pipeline, profile]=connectDepth(varargin)
 %     // The retunred object should be released with rs2_delete_pipeline_profile(...)
     profile = pipeline.start(config);
 
-    if highAccuracy == 1
+    if highDensity == 1
         % Get the depth sensor and set the preset to high accuracy
         device = profile.get_device();
         sensors = device.query_sensors();
@@ -77,11 +76,7 @@ function [pipeline, profile]=connectDepth(varargin)
         end
         
         % Set the preset to high accuracy for the depth sensor
-        sensors{1}{1}.set_option(realsense.option.visual_preset, 3); %Set the depth to high accuracy (3)
-        % 0: Default
-        % 1: Hand tracking
-        % 2: High Density
-        % 3: High Accuracy
+        sensors{1}{1}.set_option(realsense.option.visual_preset, 4); %Set the depth to high accuracy (3)
 
         %Set the RGB sensor to fixed exposure
         %sensors{1}{2}.set_option(realsense.option.enable_auto_exposure,0);

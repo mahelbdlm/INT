@@ -9,11 +9,12 @@
 clear;
 close all;
 
-targetPath = "mahel/detect_missing_part/"; %Target path (respect to INT folder)
-folderName = "missing_splinter";
-nbFrames = 150; % Number of frames to save
+targetPath = "mahel/save_palet/"; %Target path (respect to INT folder)
+folderName = "europeo";
+nbFrames = 50; % Number of frames to save
 
 plotResult = 0;
+showpair=1;
 
 save_video_depth_original      = 1;
 save_video_depth_alignto_depth = 1;
@@ -39,7 +40,7 @@ try
     % Calculate the path based on the current folder
     path = checkPath(targetPath);
     if ~exist("pipeline", "var")
-        [pipeline, profile] = connectDepth(); % Connect depth with high accuracy
+        [pipeline, profile] = connectDepth(1); % Connect depth with high accuracy
 
         % Initialize filters
         colorizer = realsense.colorizer();
@@ -158,7 +159,9 @@ try
             video_color_alignto_color(i).df = color_aligned_color_rgb;
             end
            
-            if plotResult==1
+            if showpair==1
+                imshowpair(depth_frame_original, color_original_rgb, "montage");
+            elseif plotResult==1
             subplot(2, 3, 1);
             imshow(depth_frame_original,[]);
             title('Depth Frame Original');

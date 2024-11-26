@@ -1,8 +1,5 @@
-% This function gets color/depth frames from the camera or a file
-% based on the parameters defined by the user
-% INPUT: Desired path
-% OUTPUT: output.pipeline and output.profile
-% Last modification: 21/11/2024
+% This class manages in a simple way the camera and can easily switch
+% between frames from the camera and frames from a user file.
 
 classdef getFrames
     properties
@@ -22,6 +19,8 @@ classdef getFrames
         nbFrames
         debugMode
         saveType
+        defaultColor
+        depthHighDensity
     end
     methods
         % CONSTRUCTOR
@@ -49,10 +48,19 @@ classdef getFrames
             frame.userDefinedHeight = 480;
             frame.userDefinedFPS = 30;
             frame.isActive=1;
+            frame.defaultColor=0;
+            frame.depthHighAccuracy=0;
+            frame.depthHighDensity = 1;
         end
 
         function frame=setDepthHighAccuracy(frame)
             frame.depthHighAccuracy = 1;
+            frame.depthHighDensity = 0;
+        end
+
+        function frame=setDepthHighDensity(frame)
+            frame.depthHighDensity = 1;
+            frame.depthHighAccuracy = 0;
         end
 
         function frame=setWidthAndHeight(frame, w, h)
@@ -62,6 +70,10 @@ classdef getFrames
 
         function frame=setFPS(frame, fps)
             frame.userDefinedFPS = fps;
+        end
+
+        function frame=setDefaultColor(frame)
+            frame.defaultColor = 1;
         end
 
         function frame=enableDebugMode(frame)
@@ -99,24 +111,35 @@ classdef getFrames
 
                 config.enable_stream(realsense.stream.depth,0,frame.userDefinedWidth,frame.userDefinedHeight,realsense.format.z16,frame.userDefinedFPS);
 
+                if frame.defaultColor==1
                 config.enable_stream(realsense.stream.color, realsense.format.rgba8);
+                fprintf("Default color\n");
+                else    
+                config.enable_stream(realsense.stream.color,0,frame.userDefinedWidth,frame.userDefinedHeight, realsense.format.rgba8,frame.userDefinedFPS);
+                end
+
                 %
                 %     // Start the pipeline streaming
                 %     // The retunred object should be released with rs2_delete_pipeline_profile(...)
                 profile = pipeline.start(config);
 
-                if frame.depthHighAccuracy == 1
+                if (frame.depthHighAccuracy == 1 || frame.depthHighDensity==1)
                     % Get the depth sensor and set the preset to high accuracy
                     device = profile.get_device();
                     sensors = device.query_sensors();
-                    %name = sensors{1}{2}.get_info(realsense.camera_info.name);
+                    name = sensors{1}{2}.get_info(realsense.camera_info.name);
                     fprintf("Available sensors: \n");
                     for i=1:length(sensors{1})
                         fprintf("  -%s\n", sensors{1}{i}.get_info(realsense.camera_info.name))
                     end
 
                     % Set the preset to high accuracy for the depth sensor
-                    sensors{1}{1}.set_option(realsense.option.visual_preset, 3); %Set the depth to high accuracy (3)
+                    if(frame.depthHighAccuracy==1)
+                      sensors{1}{1}.set_option(realsense.option.visual_preset, 3); %Set the depth to high accuracy (3)
+                    elseif frame.depthHighDensity==1
+                      sensors{1}{1}.set_option(realsense.option.visual_preset, 4); %4
+                    end
+                    %sensors{1}{1}.start();
                     % 0: Default
                     % 1: Hand tracking
                     % 2: High Density

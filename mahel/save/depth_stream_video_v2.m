@@ -3,18 +3,21 @@
 % a stored file
 % Last modification: 14/11/2024
 
-clear f;
+clear;
 close all;
-targetPath = "mahel/detect_missing_part/test_jan"; % Path of the video file
+%targetPath = "mahel/save_palet/test_jan"; % Path of the video file
                                                % Camera if you want to use
                                                % the camera
 
 % Connect with default configuration
 try
-    frame = getFrames(targetPath,"jan"); % The frames will be obtained using the camera
+    frame = getFrames(); % The frames will be obtained using the camera
     %frame = frame.enableDebugMode();
-    %frame = frame.depthHighAccuracy(); % Set the high accuracy for the camera
+    %frame = frame.setDepthHighAccuracy(); % Set the high accuracy for the camera
+    %frame = frame.setDepthHighDensity(); 
     %frame = frame.setWidthAndHeight(640,480); % Set the high accuracy for the camera
+    %frame = frame.setDefaultColor(); % Initialize camera with default color range
+    
     frame = frame.init(); % Initialize the frame class
 
     % Initialize filters
@@ -58,7 +61,7 @@ try
     % Processing frames in a loop
     while (ishandle(f) && frame.isActive)
         % Wait for a new frame set
-        disp("Getting frame");
+        %disp("Getting frame");
 
         [frame,depth,color] = frame.get_frame_original();
 
