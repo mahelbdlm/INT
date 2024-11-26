@@ -21,6 +21,8 @@ classdef getFrames
         saveType
         defaultColor
         depthHighDensity
+        intelFilters
+        colorizer
     end
     methods
         % CONSTRUCTOR
@@ -51,6 +53,17 @@ classdef getFrames
             frame.defaultColor=0;
             frame.depthHighAccuracy=0;
             frame.depthHighDensity = 1;
+            frame.intelFilters=0;
+        end
+
+        function frame=enableIntelFilters(frame)
+            frame.intelFilters = intelFilter();
+        end
+
+        function frame=setOptimalSize(frame)
+            frame.userDefinedWidth = 848;
+            frame.userDefinedHeight = 480;
+            frame.userDefinedFPS = 30;
         end
 
         function frame=setDepthHighAccuracy(frame)
@@ -112,10 +125,11 @@ classdef getFrames
                 config.enable_stream(realsense.stream.depth,0,frame.userDefinedWidth,frame.userDefinedHeight,realsense.format.z16,frame.userDefinedFPS);
 
                 if frame.defaultColor==1
-                config.enable_stream(realsense.stream.color, realsense.format.rgba8);
-                fprintf("Default color\n");
-                else    
-                config.enable_stream(realsense.stream.color,0,frame.userDefinedWidth,frame.userDefinedHeight, realsense.format.rgba8,frame.userDefinedFPS);
+                    %Default format for color
+                    config.enable_stream(realsense.stream.color, realsense.format.rgba8);
+                    fprintf("Default color\n");
+                else
+                    config.enable_stream(realsense.stream.color,0,frame.userDefinedWidth,frame.userDefinedHeight, realsense.format.rgba8,frame.userDefinedFPS);
                 end
 
                 %
@@ -135,9 +149,9 @@ classdef getFrames
 
                     % Set the preset to high accuracy for the depth sensor
                     if(frame.depthHighAccuracy==1)
-                      sensors{1}{1}.set_option(realsense.option.visual_preset, 3); %Set the depth to high accuracy (3)
+                        sensors{1}{1}.set_option(realsense.option.visual_preset, 3); %Set the depth to high accuracy (3)
                     elseif frame.depthHighDensity==1
-                      sensors{1}{1}.set_option(realsense.option.visual_preset, 4); %4
+                        sensors{1}{1}.set_option(realsense.option.visual_preset, 4); %4
                     end
                     %sensors{1}{1}.start();
                     % 0: Default
@@ -153,6 +167,9 @@ classdef getFrames
                 frame.cameraPipeline = pipeline;
                 frame.cameraProfile = profile;
 
+                frame.colorizer = realsense.colorizer();
+                frame.colorizer.set_option(realsense.option.color_scheme, 2);
+
                 % Discard the first 10 frames
                 for i = 1:10
                     pipeline.wait_for_frames();
@@ -161,7 +178,7 @@ classdef getFrames
                 % Get frame from video
                 path_checked=checkPath(frame.path); % Check if the user is on the right folder for the path
                 frame.file_index = 1;
- 
+
                 if frame.saveType=="mahel"
                     frame.file_color_original= load(path_checked+"/video_color_original.mat").video_color_original;
                     frame.nbFrames = length(frame.file_color_original);
@@ -169,10 +186,10 @@ classdef getFrames
                 elseif frame.saveType=="jan"
                     frame.file_video= load(path_checked+"/video1.mat").video;
                     frame.nbFrames = length(frame.file_video);
-                    
+
                 end
                 if(frame.debugMode)
-                        fprintf("nbFrames: %d, size_color: %d, size_depth: %d\n", frame.nbFrames, length(frame.file_color_original.df),length(frame.file_depth_original.df))
+                    fprintf("nbFrames: %d, size_color: %d, size_depth: %d\n", frame.nbFrames, length(frame.file_color_original.df),length(frame.file_depth_original.df))
                 end
             end
 
@@ -180,17 +197,25 @@ classdef getFrames
 
         function [frame,depth,color] = get_frame_original(frame)
             if(frame.type=="camera")
-                colorizer = realsense.colorizer();
-                colorizer.set_option(realsense.option.color_scheme, 2);
 
                 frames_camera = frame.cameraPipeline.wait_for_frames();
                 depth_frame = frames_camera.get_depth_frame();
                 color_frame = frames_camera.get_color_frame();
 
-                depth_h = depth_frame.get_height();
-                depth_w = depth_frame.get_width();
-                depth = permute(reshape(colorizer.colorize(depth_frame).get_data()', [3, depth_w, depth_h]), [3, 2, 1]);
-
+                if(class(frame.intelFilters)=="intelFilter")
+                    % Apply filters
+                    depth = frame.intelFilters.decimation.process(depth_frame);
+                    disparity_frame = frame.intelFilters.depth2disparity.process(depth);
+                    depth = frame.intelFilters.spatial.process(disparity_frame);
+                    depth = frame.intelFilters.temporal.process(depth);
+                    depth = frame.intelFilters.disparity2depth.process(depth);
+                    depth = frame.colorizer.colorize(depth);
+                    depth = permute(reshape(depth.get_data()', [3, depth.get_width(), depth.get_height()]), [3, 2, 1]);
+                else
+                    depth_h = depth_frame.get_height();
+                    depth_w = depth_frame.get_width();
+                    depth = permute(reshape(frame.colorizer.colorize(depth_frame).get_data()', [3, depth_w, depth_h]), [3, 2, 1]);
+                end
                 color_w=color_frame.get_width();
                 color_h=color_frame.get_height();
                 color_original_rgba = permute(reshape(color_frame.get_data(),[],color_w,color_h), [3, 2, 1]);

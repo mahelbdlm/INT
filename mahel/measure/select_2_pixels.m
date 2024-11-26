@@ -120,11 +120,10 @@ try
 catch error
     % Error handling
     if error.identifier == "MATLAB:UndefinedFunction"
-        if contains(error.message, 'connectDepth') || contains(error.message, 'dist_3d')
-            fprintf(2, "You must add the modules folder to the MATLAB path\n  => Right-click on module folder -> add to path -> Selected folder\n");
-        else
-            rethrow(error);
-        end
+        fprintf(2, "The modules/class folder was not added to your matlab path.\nIt has now been added and the code execution was restarted.\n");
+        addpath('modules');
+        addpath('class');
+        rethrow(error);
     elseif error.identifier == "MATLAB:ginput:FigureDeletionPause"
             fprintf(2, "Figure was closed before selecting points\n");
             clear f;
