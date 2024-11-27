@@ -27,19 +27,21 @@ try
     if(~imagesv2Exist)
         frame = getFrames(targetPath,"mahel"); % The frames will be obtained using the camera and mahel file format
         frame = frame.init(); % Initialize the frame class
-        [frame,depth,color] = frame.get_frame_at_index(1); %125 to work
+        [frame,depth,color] = frame.get_frame_at_index(25);
     
         grayImg = rgb2gray(color); % For color image
+        [originalHeight, originalWidth, ~] = size(grayImg);
+        grayImg = imcrop(grayImg,[0 180 originalWidth 140]);
     
    
         tic;
-        [BW,maskedImage] = segmentImage_v3(grayImg);
+        [BW,maskedImage] = segmentImage_v4(grayImg);
         elapsedTime = toc;
 
         disp(['Elapsed Time: ', num2str(elapsedTime), ' seconds']);
     
-        imwrite(BW, "mahel/deep_learning/BW.jpg");
-        imwrite(maskedImage, "mahel/deep_learning/masked.jpg");
+        %imwrite(BW, "mahel/deep_learning/BW.jpg");
+        %imwrite(maskedImage, "mahel/deep_learning/masked.jpg");
     end
 
     edges = edge(BW, 'canny');
@@ -52,33 +54,57 @@ try
     % The larger the line, the higher the peak. By filtering to a high
     % value, we select the largest lines
 
-    lines = houghlines(edges,T,R,P,'FillGap',150,'MinLength',3);
+    linesEdges = houghlines(edges,T,R,P,'FillGap',150,'MinLength',3);
     %fillGap: Distance between 2 lines to be considered a single line
     % minLength: minimum length for the line to be accepted
 
 
-    figure, imshow(edges), hold on
-    max_len = 0;
-    for k = 1:length(lines)
-        xy = [lines(k).point1; lines(k).point2];
-        plot(xy(:,1),xy(:,2),'LineWidth',2,'Color','green');
+    figure;
+    subplot(3,1,1);
+    showHoughLines(edges, linesEdges);
 
-        % Plot beginnings and ends of lines
-        plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','yellow');
-        plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','red');
+    if false
+        subplot(3,1,2);
+        cornersEigen = detectMinEigenFeatures(grayImg);
+        imshow(grayImg); hold on;
+        plot(cornersEigen.selectStrongest(50));
+    
+        cornersHarris = detectHarrisFeatures(grayImg);
+        subplot(3,1,3);
+        imshow(grayImg); hold on;
+        plot(cornersHarris.selectStrongest(50));
+    end
 
-        % Determine the endpoints of the longest line segment
-        len = norm(lines(k).point1 - lines(k).point2);
-        if ( len > max_len)
-            max_len = len;
-            xy_long = xy;
+    [edgesHeight, edgesWidth, ~] = size(edges);
+    edgesLeft = imcrop(edges,[0 0 originalWidth/2 edgesWidth]);
+    subplot(3,2,3);
+    imshow(edgesLeft);
+    subplot(3,2,4);
+    
+    [Hl,Tl,Rl]=hough(edgesLeft);
+    Pl  = houghpeaks(Hl,50,'threshold',ceil(0.5*max(Hl(:))));
+    linesEdges_l = houghlines(edgesLeft,Tl,Rl,Pl,'FillGap',50,'MinLength',3);
+    lineLengths = showHoughLines(edgesLeft, linesEdges_l);
+    
+    numLines = length(lineLengths);
+    similarPairs = [];
+    for i = 1:numLines
+        for j = i+1:numLines
+            if abs(lineLengths(i) - lineLengths(j)) <= 5 %Max length diff is 5
+                similarPairs = [similarPairs; i, j];
+            end
         end
     end
-    % highlight the longest line segment
-    plot(xy_long(:,1),xy_long(:,2),'LineWidth',2,'Color','red');
+    if(length(similarPairs)==2)
+        % Save the square to detect dimensions using depth
+        l1_px1 = linesEdges_l(similarPairs(1)).point1;
+        l1_px2 = linesEdges_l(similarPairs(1)).point2;
 
-
-
+        l2_px1 = linesEdges_l(similarPairs(2)).point1;
+        l2_px2 = linesEdges_l(similarPairs(2)).point2;
+    else
+        error("More than 2 lines were detected");
+    end
 
 catch error
     % Error handling

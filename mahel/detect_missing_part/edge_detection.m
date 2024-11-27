@@ -11,6 +11,8 @@
 clear;
 close all;
 targetPath = "mahel/detect_missing_part/missing_splinter1"; % Path of the video file
+%targetPath = "mahel/palet_side/americano1"; % Path of the video file
+plotAllResults = 1;
 % Camera if you want to use
 % the camera
 
@@ -18,22 +20,25 @@ targetPath = "mahel/detect_missing_part/missing_splinter1"; % Path of the video 
 try
     frame = getFrames(targetPath,"mahel"); % The frames will be obtained using the camera and mahel file format
     frame = frame.init(); % Initialize the frame class
-    [frame,depth,color] = frame.get_frame_at_index(125);
-    imshow(color);
+    [frame,depth,color] = frame.get_frame_at_index(25);
+
+    [originalHeight, originalWidth, ~] = size(color);
+    imgCropped = imcrop(color,[0 180 originalWidth 140]);
+    %[0.5 184.5 640 125]
 
     %imgclosed=imclose(depth(:,:,1),strel('disk',5));
     %grayImg=medfilt2(imgclosed,[20 20],'symmetric');
 
-    grayImg = rgb2gray(color); % For color image
-    %bwImg = imbinarize(grayImg, 'adaptive', 'Sensitivity', 0.5);
-    bwImg = imbinarize(grayImg,"adaptive","ForegroundPolarity","dark");
+    grayImg = rgb2gray(imgCropped); % For color image
+    bwImg = imbinarize(grayImg, 'adaptive', 'Sensitivity', 0.5);
+    %bwImg = imbinarize(grayImg,"adaptive","ForegroundPolarity","dark");
 
     bwFilled = imfill(bwImg, 'holes');
     edges = edge(bwImg, 'canny');
     %edges = edge(bwFilled, 'canny');
 
 
-    %%% To do: 
+    %%% To do:
     smoothedImage = imgaussfilt(grayImg, 4); % Adjust sigma as needed
     edges = edge(smoothedImage, 'canny');
 
@@ -41,7 +46,7 @@ try
     % se = strel('line', 5, 0); % Structuring element for morphological operations
     % edges = imdilate(edges, se); % Dilate the edge image
     % edges = imerode(edges, se);  % Erode to restore original shape
-    % 
+    %
     % smoothedImage = imgaussfilt(grayImg, 2); % Adjust sigma as needed
     % edges = edge(smoothedImage, 'canny');
     %%%
@@ -59,8 +64,32 @@ try
     %fillGap: Distance between 2 lines to be considered a single line
     % minLength: minimum length for the line to be accepted
 
+    screenSize = get(0, 'ScreenSize');
+    % Define the figure dimensions
+    figWidth = 800;
+    figHeight = 900;
 
-    figure, imshow(edges), hold on
+    % Calculate the position for centering
+    figX = (screenSize(3) - figWidth) / 2;
+    figY = (screenSize(4) - figHeight) / 2;
+
+    % Create the centered figure
+    f = figure('Name', 'RealSense Depth Measurement', 'NumberTitle', 'off', ...
+        'Position', [figX, figY, figWidth, figHeight]);
+    if plotAllResults
+        nbRow = 5;
+        subplot(nbRow, 1, 1);
+        imshow(imgCropped);
+        subplot(nbRow, 1, 2);
+        imshow(grayImg);
+        subplot(nbRow, 1, 3);
+        imshow(bwImg);
+        subplot(nbRow, 1, 4);
+        imshow(edges);
+        subplot(nbRow, 1, 5);
+    end
+
+    imshow(edges), hold on
     max_len = 0;
     for k = 1:length(lines)
         xy = [lines(k).point1; lines(k).point2];
@@ -82,10 +111,20 @@ try
 
     % xy = [lines(1).point1; lines(2).point1];
     % plot(xy(:,1),xy(:,2),'LineWidth',2,'Color','blue');
-    % 
+    %
     % xy = [lines(1).point2; lines(2).point2];
     % plot(xy(:,1),xy(:,2),'LineWidth',2,'Color','blue');
+    return;
+    figure(2);
+    subplot(2,1,1);
+    cornersEigen = detectMinEigenFeatures(grayImg);
+    imshow(grayImg); hold on;
+    plot(cornersEigen.selectStrongest(50));
 
+    cornersHarris = detectHarrisFeatures(grayImg);
+    subplot(2,1,2);
+    imshow(grayImg); hold on;
+    plot(cornersHarris.selectStrongest(50));
     return;
 
 

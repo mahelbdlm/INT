@@ -6,10 +6,11 @@ classdef getFrames
         type
         path
         isActive
-        depthHighAccuracy
-        userDefinedWidth
-        userDefinedHeight
-        userDefinedFPS
+        cameraParam
+        % depthHighAccuracy
+        % userDefinedWidth
+        % userDefinedHeight
+        % userDefinedFPS
         cameraPipeline
         cameraProfile
         file_color_original
@@ -19,8 +20,8 @@ classdef getFrames
         nbFrames
         debugMode
         saveType
-        defaultColor
-        depthHighDensity
+        % defaultColor
+        % depthHighDensity
         intelFilters
         colorizer
     end
@@ -40,57 +41,37 @@ classdef getFrames
 
             if(nargin>=2 && varargin{2}~="")
                 frame.saveType=varargin{2};
-            else
-                %Default saving format is "mahel"
-                frame.saveType="mahel";
+                if(~ismember(frame.saveType, ["jan","mahelv2","mahelv3"]))
+                    error("This saved type (%s) was not recognized.",frame.saveType)
+                end
+            elseif(frame.type == "local")
+                error("You must specify a saved format. Saved formats are:jan, mahelv2, mahelv3");
             end
 
-            frame.depthHighAccuracy = 0;
-            frame.userDefinedWidth = 640;
-            frame.userDefinedHeight = 480;
-            frame.userDefinedFPS = 30;
+            frame.cameraParam = cameraParams(); %from calss cameraParams
             frame.isActive=1;
-            frame.defaultColor=0;
-            frame.depthHighAccuracy=0;
-            frame.depthHighDensity = 1;
             frame.intelFilters=0;
         end
 
         function frame=enableIntelFilters(frame)
             frame.intelFilters = intelFilter();
-        end
-
-        function frame=setOptimalSize(frame)
-            frame.userDefinedWidth = 848;
-            frame.userDefinedHeight = 480;
-            frame.userDefinedFPS = 30;
-        end
-
-        function frame=setDepthHighAccuracy(frame)
-            frame.depthHighAccuracy = 1;
-            frame.depthHighDensity = 0;
-        end
-
-        function frame=setDepthHighDensity(frame)
-            frame.depthHighDensity = 1;
-            frame.depthHighAccuracy = 0;
-        end
-
-        function frame=setWidthAndHeight(frame, w, h)
-            frame.userDefinedWidth = w;
-            frame.userDefinedHeight = h;
-        end
-
-        function frame=setFPS(frame, fps)
-            frame.userDefinedFPS = fps;
-        end
-
-        function frame=setDefaultColor(frame)
-            frame.defaultColor = 1;
-        end
+        end        
 
         function frame=enableDebugMode(frame)
             frame.debugMode = 1;
+        end
+        function nbFrames=returnNbFrames(frame)
+            nbFrames = frame.nbFrames;
+        end
+
+        function frame = setCameraParams(frame, methodName, varargin)
+            % Check if the method exists in the cameraParams class
+            if ismethod(frame.cameraParam, methodName)
+                % Dynamically call the specified method with arguments
+                frame.cameraParam = frame.cameraParam.(methodName)(varargin{:});
+            else
+                error('Method "%s" does not exist in the cameraParams class.', methodName);
+            end
         end
         function frame = init(frame)
             if(frame.type=="camera")
@@ -122,14 +103,14 @@ classdef getFrames
                 %     saying it wasn't able to resolve...(!)
 
 
-                config.enable_stream(realsense.stream.depth,0,frame.userDefinedWidth,frame.userDefinedHeight,realsense.format.z16,frame.userDefinedFPS);
+                config.enable_stream(realsense.stream.depth,0,frame.cameraParam.cameraWidth,frame.cameraParam.cameraHeight,realsense.format.z16,frame.cameraParam.FPS);
 
-                if frame.defaultColor==1
+                if frame.cameraParam.defaultSizeColor==1
                     %Default format for color
                     config.enable_stream(realsense.stream.color, realsense.format.rgba8);
                     fprintf("Default color\n");
                 else
-                    config.enable_stream(realsense.stream.color,0,frame.userDefinedWidth,frame.userDefinedHeight, realsense.format.rgba8,frame.userDefinedFPS);
+                    config.enable_stream(realsense.stream.color,0,frame.cameraParam.cameraWidth,frame.cameraParam.cameraHeight, realsense.format.rgba8,frame.cameraParam.FPS);
                 end
 
                 %
@@ -137,7 +118,7 @@ classdef getFrames
                 %     // The retunred object should be released with rs2_delete_pipeline_profile(...)
                 profile = pipeline.start(config);
 
-                if (frame.depthHighAccuracy == 1 || frame.depthHighDensity==1)
+                if (frame.cameraParam.depthHighAccuracy == 1 || frame.cameraParam.depthHighDensity==1)
                     % Get the depth sensor and set the preset to high accuracy
                     device = profile.get_device();
                     sensors = device.query_sensors();
@@ -148,9 +129,9 @@ classdef getFrames
                     end
 
                     % Set the preset to high accuracy for the depth sensor
-                    if(frame.depthHighAccuracy==1)
+                    if(frame.cameraParam.depthHighAccuracy==1)
                         sensors{1}{1}.set_option(realsense.option.visual_preset, 3); %Set the depth to high accuracy (3)
-                    elseif frame.depthHighDensity==1
+                    elseif frame.cameraParam.depthHighDensity==1
                         sensors{1}{1}.set_option(realsense.option.visual_preset, 4); %4
                     end
                     %sensors{1}{1}.start();
@@ -179,13 +160,15 @@ classdef getFrames
                 path_checked=checkPath(frame.path); % Check if the user is on the right folder for the path
                 frame.file_index = 1;
 
-                if frame.saveType=="mahel"
+                if frame.saveType=="mahelv2"
                     frame.file_color_original= load(path_checked+"/video_color_original.mat").video_color_original;
                     frame.nbFrames = length(frame.file_color_original);
                     frame.file_depth_original= load(path_checked+"/video_depth_original.mat").video_depth_original;
                 elseif frame.saveType=="jan"
                     frame.file_video= load(path_checked+"/video1.mat").video;
                     frame.nbFrames = length(frame.file_video);
+                else
+                    error("This format does not exist or was not appropriately defined in the class.");
 
                 end
                 if(frame.debugMode)
@@ -227,13 +210,16 @@ classdef getFrames
                     fprintf("Index: %d\n", frame.file_index);
                 end
 
-                if frame.saveType=="mahel"
+                if frame.saveType=="mahelv2"
                     color = frame.file_color_original(frame.file_index).df;
                     depth = frame.file_depth_original(frame.file_index).df;
                 elseif frame.saveType=="jan"
                     depth=frame.file_video(frame.file_index).original_depth;
                     color=frame.file_video(frame.file_index).color;
+                else
+                    error("This format does not exist or was not appropriately defined in the class.");
                 end
+
 
                 frame.file_index = frame.file_index+1;
 
@@ -253,12 +239,14 @@ classdef getFrames
             else
                 % Get frame from file
 
-                if frame.saveType=="mahel"
+                if frame.saveType=="mahelv2"
                     color = frame.file_color_original(indexFrame).df;
                     depth = frame.file_depth_original(indexFrame).df;
                 elseif frame.saveType=="jan"
                     depth=frame.file_video(indexFrame).original_depth;
                     color=frame.file_video(indexFrame).color;
+                else
+                    error("This format does not exist or was not appropriately defined in the class.");
                 end
 
             end

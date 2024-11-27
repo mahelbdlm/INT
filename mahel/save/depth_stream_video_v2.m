@@ -13,7 +13,7 @@ close all;
 try
     frame = getFrames(); % The frames will be obtained using the camera
     %frame = frame.enableDebugMode();
-    frame = frame.setDepthHighDensity(); 
+    frame = frame.setCameraParams("setDepthHighDensity");
     %frame = frame.setDefaultColor();
     %frame = frame.enableIntelFilters();
     

@@ -1,13 +1,17 @@
 % Import video file and work with it
 
-targetPath = "mahel/detect_missing_part/test1"; % Path of the video file
+clear;
+close all;
+targetPath = "mahel/palet_side/europeo1"; % Path of the video file
 fps = 30;
 
 try
-    frame = getFrames(targetPath,"mahel"); % The frames will be obtained using the camera and mahel file format
+    frame = getFrames(targetPath, "mahelv2"); % The frames will be obtained using the camera and mahel file format
+    %frame = frame.setCameraParams("setDepthHighAccuracy");
     frame = frame.init(); % Initialize the frame class
     
-    for i=1:150
+    nbFrames = frame.returnNbFrames();
+    for i=1:nbFrames
         [frame,depth,color] = frame.get_frame_at_index(i); %125 to work
         imshow(color, []);
         drawnow;

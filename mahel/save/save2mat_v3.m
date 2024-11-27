@@ -1,4 +1,5 @@
-% This code is deprecated and should not be used.
+% This new update to save2mat brings time frame saving and depth intrinsics
+% saving
 
 
 
@@ -11,14 +12,14 @@ targetPath = "mahel/save_palet/"; %Target path (respect to INT folder)
 folderName = "europeo";
 nbFrames = 50; % Number of frames to save
 
-plotResult = 0;
-showpair=1;
+plotResult = 0; % Plot all the results (not recommended)
+showpair=1; % Plot the depth / color camera result (slows the frames)
 
 save_video_depth_original      = 1;
-save_video_depth_alignto_depth = 1;
+save_video_depth_alignto_depth = 0;
 save_video_depth_alignto_color = 1;
 save_video_color_original      = 1;
-save_video_color_alignto_depth = 1;
+save_video_color_alignto_depth = 0;
 save_video_color_alignto_color = 1;
 
 saveFiles = 1; % 1 to save files, 0 to discard the saving process
@@ -77,7 +78,6 @@ try
         depth_frame = frames.get_depth_frame();
         color_frame = frames.get_color_frame();
         
-        
         if ~isempty(frames)
             aligned_depth_frames = align_to_depth.process(frames);
             aligned_color_frames = align_to_color.process(frames);
@@ -87,24 +87,10 @@ try
             
             depth_align_color = aligned_color_frames.get_depth_frame();
             color_align_color = aligned_color_frames.get_color_frame();
-    
-            % Apply filters
-            %depth_frame = decimation.process(depth_frame);
-            %disparity_frame = depth2disparity.process(depth_frame);
-            %depth_frame = spatial.process(disparity_frame);
-            %depth_frame = temporal.process(depth_frame);
-            %depth_frame = disparity2depth.process(depth_frame);
-    
-            % Colorize depth frame
-            %colorized_depth = colorizer.colorize(depth_frame);
-            
-            % Display the colorized depth frame
-            %img = colorized_depth.get_data();
-            %height = depth.get_height();
-            %width = depth.get_width();
-            %depth_frame_colorized = permute(reshape(colorizer.colorize(depth).get_data()', [3, width, height]), [3, 2, 1]);
-            
-            %color_data_aligned=color_frame_aligned.get_data();
+
+            if i==1
+                t0=original_depth.get_timestamp();
+            end
 
             if save_video_depth_original==1
             %Treat depth frame original
