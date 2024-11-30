@@ -1,5 +1,11 @@
 # Image segmenter app
+The scripts in this folder use the Image Segmenter app from matlab to separate the foreground (the palet) from the background. This allows us to have better results when applying the edge detection algorithm. 
+
 ## Segment anything model
+The segment anything model is an easy-to-use deep learning algorithm which aims at extracting a ROI (region of interest) from the backgroud. 
+> [!IMPORTANT]
+> This algorithm is really slow and takes about 15-30 seconds for an image. It will not be used in our case.
+
 Using the image segmenter app and segment anything model of matlab, we can easily use deep learning to achieve our goals. 
 <div align="center">
   <img width="60%" height="60%" src="https://github.com/user-attachments/assets/dd9ec519-ce54-4beb-b415-2ff87d505970"></img>

@@ -15,17 +15,17 @@ Upon execution, it opens a new figure and waits for the user to left-click on th
 
 Upon executing the code: 
 <div align="center">
-    <img height="60%" width="60%" alt="Image from matlab" src="/../main/mahel/img/img1.png?raw=true">
+    <img height="60%" width="60%" alt="Image from matlab" src="https://github.com/user-attachments/assets/3fcadc4c-8a2e-46fc-8716-af14347cae51">
 </div>
 As it can be seen in the previous picture, the camera detects the changes of depth depending on the point chosen. 
 The following configuration was used:
 <div align="center">
-    <img height="60%" width="60%" alt="Realsense config" src="/../main/mahel/img/img2.JPEG?raw=true">
+    <img height="60%" width="60%" alt="Realsense config" src="https://github.com/user-attachments/assets/3904bb0d-abcd-4c37-89de-63cabaed67cb">
 </div>
 
 Example using a roud bin:
 <div align="center">
-    <img height="60%" width="60%" alt="Image from matlab" src="/../main/mahel/img/img3.png?raw=true">
+    <img height="60%" width="60%" alt="Image from matlab" src="https://github.com/user-attachments/assets/6c6a70fa-ba17-4485-bc42-f3648d3f1ab7">
 </div>
 The camera shows correctly the distance changing due to the round nature of the object.
 
@@ -43,7 +43,7 @@ Note that the RGB data is reshaped to correspond to the sizes of the depth image
 
 Upon executing the code: 
 <div align="center">
-    <img height="60%" width="60%" alt="Image from matlab" src="/../main/mahel/img/img4.png?raw=true">
+    <img height="60%" width="60%" alt="Image from matlab" src="https://github.com/user-attachments/assets/13007c43-b9ab-47bf-830e-bacdeffab289">
 </div>
 As it can be seen in the previous picture, the data from the RGB and depth sensor is shown in a montage. 
 This is particularly useful to observe the difference of vision between the depth and rgb sensor. 
