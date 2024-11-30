@@ -40,9 +40,10 @@ classdef getFrames
             end
 
             if(nargin>=2 && varargin{2}~="")
+                availableTypes = ["jan","mahelv2","mahelv3"];
                 frame.saveType=varargin{2};
-                if(~ismember(frame.saveType, ["jan","mahelv2","mahelv3"]))
-                    error("This saved type (%s) was not recognized.",frame.saveType)
+                if(~ismember(frame.saveType, availableTypes))
+                    error("This saved type (%s) was not recognized. Available types are: %s",frame.saveType, join(string(availableTypes), ', '));
                 end
             elseif(frame.type == "local")
                 error("You must specify a saved format. Saved formats are:jan, mahelv2, mahelv3");
@@ -55,7 +56,7 @@ classdef getFrames
 
         function frame=enableIntelFilters(frame)
             frame.intelFilters = intelFilter();
-        end        
+        end
 
         function frame=enableDebugMode(frame)
             frame.debugMode = 1;
@@ -155,6 +156,7 @@ classdef getFrames
                 for i = 1:10
                     pipeline.wait_for_frames();
                 end
+
             else
                 % Get frame from video
                 path_checked=checkPath(frame.path); % Check if the user is on the right folder for the path
@@ -176,6 +178,56 @@ classdef getFrames
                 end
             end
 
+        end
+
+        function intrinsics = get_intrinsics(frame)
+            depthStream = frame.cameraProfile.get_stream(realsense.stream.depth);
+            if isempty(depthStream)
+                error('Depth stream not available in this profile!');
+            end
+            depthProfile = depthStream.as('video_stream_profile');
+            intrinsics = depthProfile.get_intrinsics();
+        end
+
+        function dist = dist_3d(frame, intrinsics, upixel, udist, vpixel, vdist)
+            % Deproject from pixel to 3D space using the intrinsic parameters
+            % Using the deprojection formula
+            upoint = [(upixel(1) - intrinsics.ppx) * udist / intrinsics.fx, ...
+                      (upixel(2) - intrinsics.ppy) * udist / intrinsics.fy, ...
+                      udist];  % [X, Y, Z]
+        
+            vpoint = [(vpixel(1) - intrinsics.ppx) * vdist / intrinsics.fx, ...
+                      (vpixel(2) - intrinsics.ppy) * vdist / intrinsics.fy, ...
+                      vdist];  % [X, Y, Z]
+        
+            % Calculate Euclidean distance between two points
+            dist = sqrt(sum((upoint - vpoint).^2));
+        end
+
+        function [frame, depth, color] = get_frame_from_file(frame)
+            if(frame.type=="local")
+                if(frame.debugMode)
+                    fprintf("Index: %d\n", frame.file_index);
+                end
+
+                if frame.saveType=="mahelv2"
+                    color = frame.file_color_original(frame.file_index).df;
+                    depth = frame.file_depth_original(frame.file_index).df;
+                elseif frame.saveType=="jan"
+                    depth=frame.file_video(frame.file_index).original_depth;
+                    color=frame.file_video(frame.file_index).color;
+                else
+                    error("This format does not exist or was not appropriately defined in the class.");
+                end
+
+
+                frame.file_index = frame.file_index+1;
+
+                if(frame.file_index == frame.nbFrames)
+                    frame.isActive = 0;
+                    fprintf("End of video.\n");
+                end
+            end
         end
 
         function [frame,depth,color] = get_frame_original(frame)
@@ -205,32 +257,49 @@ classdef getFrames
                 color = color_original_rgba(:, :, 1:3);
 
             else
-                % Get frame from file
-                if(frame.debugMode)
-                    fprintf("Index: %d\n", frame.file_index);
-                end
-
-                if frame.saveType=="mahelv2"
-                    color = frame.file_color_original(frame.file_index).df;
-                    depth = frame.file_depth_original(frame.file_index).df;
-                elseif frame.saveType=="jan"
-                    depth=frame.file_video(frame.file_index).original_depth;
-                    color=frame.file_video(frame.file_index).color;
-                else
-                    error("This format does not exist or was not appropriately defined in the class.");
-                end
-
-
-                frame.file_index = frame.file_index+1;
-
-                if(frame.file_index == frame.nbFrames)
-                    frame.isActive = 0;
-                    fprintf("End of video.\n");
-                end
+                [frame, depth, color] = get_frame_from_file();
 
             end
-
         end
+
+        function [frame,depthFrame,depth,color] = get_frame_aligned(frame)
+            % Get frame aligned to color
+            if(frame.type=="camera")
+
+                frames_camera = frame.cameraPipeline.wait_for_frames();
+                align_to_color = realsense.align(realsense.stream.color);
+                aligned_color_frames = align_to_color.process(frames_camera);
+                depth_frame = aligned_color_frames.get_depth_frame();
+                depthFrame = depth_frame.as('depth_frame');
+                color_frame = aligned_color_frames.get_color_frame();
+
+
+                if(class(frame.intelFilters)=="intelFilter")
+                    % Apply filters
+                    depth = frame.intelFilters.decimation.process(depth_frame);
+                    disparity_frame = frame.intelFilters.depth2disparity.process(depth);
+                    depth = frame.intelFilters.spatial.process(disparity_frame);
+                    depth = frame.intelFilters.temporal.process(depth);
+                    depth = frame.intelFilters.disparity2depth.process(depth);
+                    depth = frame.colorizer.colorize(depth);
+                    depth = permute(reshape(depth.get_data()', [3, depth.get_width(), depth.get_height()]), [3, 2, 1]);
+                else
+                    depth_h = depth_frame.get_height();
+                    depth_w = depth_frame.get_width();
+                    depth = permute(reshape(frame.colorizer.colorize(depth_frame).get_data()', [3, depth_w, depth_h]), [3, 2, 1]);
+                end
+                color_w=color_frame.get_width();
+                color_h=color_frame.get_height();
+                color_original_rgba = permute(reshape(color_frame.get_data(),[],color_w,color_h), [3, 2, 1]);
+                color = color_original_rgba(:, :, 1:3);
+
+            else
+                [frame, depth, color] = get_frame_from_file();
+
+            end
+        end
+
+
 
         function [frame,depth,color] = get_frame_at_index(frame, indexFrame)
             if(frame.type=="camera")

@@ -1,5 +1,4 @@
-% This new update to save2mat brings time frame saving and depth intrinsics
-% saving
+% This code is deprecated and should not be used.
 
 
 
@@ -8,19 +7,16 @@
 clear;
 close all;
 
-targetPath = "mahel/save_palet/"; %Target path (respect to INT folder)
-folderName = "europeo";
+targetPath = "mahel/save/"; %Target path (respect to INT folder)
+folderName = "test";
 nbFrames = 50; % Number of frames to save
 
-plotResult = 0; % Plot all the results (not recommended)
-showpair=1; % Plot the depth / color camera result (slows the frames)
+plotResult = 0;
+showpair=1;
 
 save_video_depth_original      = 1;
-save_video_depth_alignto_depth = 0;
 save_video_depth_alignto_color = 1;
 save_video_color_original      = 1;
-save_video_color_alignto_depth = 0;
-save_video_color_alignto_color = 1;
 
 saveFiles = 1; % 1 to save files, 0 to discard the saving process
 
@@ -28,11 +24,8 @@ saveFiles = 1; % 1 to save files, 0 to discard the saving process
 
 
 video_depth_original=struct();
-video_depth_alignto_depth=struct();
 video_depth_alignto_color=struct();
 video_color_original=struct();
-video_color_alignto_depth=struct();
-video_color_alignto_color=struct();
 
 
 try
@@ -56,7 +49,6 @@ try
     
         temporal = realsense.temporal_filter();
     
-        align_to_depth = realsense.align(realsense.stream.depth);
         align_to_color = realsense.align(realsense.stream.color);
     end
     
@@ -78,34 +70,43 @@ try
         depth_frame = frames.get_depth_frame();
         color_frame = frames.get_color_frame();
         
+        
         if ~isempty(frames)
-            aligned_depth_frames = align_to_depth.process(frames);
             aligned_color_frames = align_to_color.process(frames);
-
-            depth_align_depth = aligned_depth_frames.get_depth_frame();
-            color_align_depth = aligned_depth_frames.get_color_frame();
             
             depth_align_color = aligned_color_frames.get_depth_frame();
             color_align_color = aligned_color_frames.get_color_frame();
 
             if i==1
-                t0=original_depth.get_timestamp();
+                t0=color_frame.get_timestamp();
             end
+    
+            % Apply filters
+            %depth_frame = decimation.process(depth_frame);
+            %disparity_frame = depth2disparity.process(depth_frame);
+            %depth_frame = spatial.process(disparity_frame);
+            %depth_frame = temporal.process(depth_frame);
+            %depth_frame = disparity2depth.process(depth_frame);
+    
+            % Colorize depth frame
+            %colorized_depth = colorizer.colorize(depth_frame);
+            
+            % Display the colorized depth frame
+            %img = colorized_depth.get_data();
+            %height = depth.get_height();
+            %width = depth.get_width();
+            %depth_frame_colorized = permute(reshape(colorizer.colorize(depth).get_data()', [3, width, height]), [3, 2, 1]);
+            
+            %color_data_aligned=color_frame_aligned.get_data();
 
             if save_video_depth_original==1
             %Treat depth frame original
             depth_h = depth_frame.get_height();
             depth_w = depth_frame.get_width();
             depth_frame_original = permute(reshape(colorizer.colorize(depth_frame).get_data()', [3, depth_w, depth_h]), [3, 2, 1]);
+            video_depth_original(i).original = depth_frame;
             video_depth_original(i).df = depth_frame_original;
-            end
-
-            if save_video_depth_alignto_depth==1
-            %Treat depth frame from align_to depth
-            depth_aligned_depth_h = depth_align_depth.get_height();
-            depth_aligned_depth_w = depth_align_depth.get_width();
-            depth_frame_aligned_depth = permute(reshape(colorizer.colorize(depth_align_depth).get_data()', [3, depth_aligned_depth_w, depth_aligned_depth_h]), [3, 2, 1]);
-            video_depth_alignto_depth(i).df = depth_frame_aligned_depth;
+            video_depth_original(i).t=depth_frame.get_timestamp-t0;
             end
 
             if save_video_depth_alignto_color==1
@@ -113,7 +114,9 @@ try
             depth_aligned_color_h = depth_align_color.get_height();
             depth_aligned_color_w = depth_align_color.get_width();
             depth_frame_aligned_color = permute(reshape(colorizer.colorize(depth_align_color).get_data()', [3, depth_aligned_color_w, depth_aligned_color_h]), [3, 2, 1]);
+            video_depth_alignto_color(i).original = depth_align_color.get_data();
             video_depth_alignto_color(i).df = depth_frame_aligned_color;
+            video_depth_alignto_color(i).t=depth_align_color.get_timestamp-t0;
             end
 
             if save_video_color_original==1
@@ -123,27 +126,10 @@ try
             color_original_rgba = permute(reshape(color_frame.get_data(),[],color_w,color_h), [3, 2, 1]);
             color_original_rgb = color_original_rgba(:, :, 1:3);
             video_color_original(i).df = color_original_rgb;
+            video_color_original(i).t=color_frame.get_timestamp-t0;
             end
 
-            if save_video_color_alignto_depth==1
-             %Treat the colorized image aligned depth
-            color_aligned_depth_w=color_align_depth.get_width();
-            color_aligned_depth_h=color_align_depth.get_height();
-            color_aligned_depth_rgba = permute(reshape(color_align_depth.get_data(),[],color_aligned_depth_w,color_aligned_depth_h), [3, 2, 1]);
-            color_aligned_depth_rgb = color_aligned_depth_rgba(:, :, 1:3);
-            video_color_alignto_depth(i).df = color_aligned_depth_rgb;
-            end
-
-            if save_video_color_alignto_color==1
-             %Treat the colorized image aligned color
-            color_aligned_color_w=color_align_color.get_width();
-            color_aligned_color_h=color_align_color.get_height();
-            color_aligned_color_rgba = permute(reshape(color_align_color.get_data(),[],color_aligned_color_w,color_aligned_color_h), [3, 2, 1]);
-            color_aligned_color_rgb = color_aligned_depth_rgba(:, :, 1:3);
-            video_color_alignto_color(i).df = color_aligned_color_rgb;
-            end
-           
-            if showpair==1
+            if showpair==1 && save_video_depth_original==1
                 imshowpair(depth_frame_original, color_original_rgb, "montage");
             elseif plotResult==1
             subplot(2, 3, 1);
@@ -193,24 +179,12 @@ try
             save(path+folderName+testNum+'/video_depth_original.mat',"video_depth_original");
         end
 
-        if save_video_depth_alignto_depth==1
-            save(path+folderName+testNum+'/video_depth_alignto_depth.mat',"video_depth_alignto_depth");
-        end
-
         if save_video_depth_alignto_color==1
             save(path+folderName+testNum+'/video_depth_alignto_color.mat',"video_depth_alignto_color");
         end
 
         if save_video_color_original==1
             save(path+folderName+testNum+'/video_color_original.mat',"video_color_original");
-        end
-
-        if save_video_color_alignto_depth==1
-            save(path+folderName+testNum+'/video_color_alignto_depth.mat',"video_color_alignto_depth");
-        end      
-        
-        if save_video_color_alignto_color==1
-            save(path+folderName+testNum+'/video_color_alignto_color.mat',"video_color_alignto_color");
         end
 
         fprintf("Content successfully saved\n");

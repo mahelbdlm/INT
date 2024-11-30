@@ -7,8 +7,8 @@
 clear;
 close all;
 
-targetPath = "mahel/save_palet/"; %Target path (respect to INT folder)
-folderName = "europeo";
+targetPath = "mahel/save/"; %Target path (respect to INT folder)
+folderName = "test";
 nbFrames = 50; % Number of frames to save
 
 plotResult = 0;
