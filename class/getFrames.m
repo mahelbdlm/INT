@@ -7,10 +7,6 @@ classdef getFrames
         path
         isActive
         cameraParam
-        % depthHighAccuracy
-        % userDefinedWidth
-        % userDefinedHeight
-        % userDefinedFPS
         cameraPipeline
         cameraProfile
         file_color_original
@@ -20,10 +16,9 @@ classdef getFrames
         nbFrames
         debugMode
         saveType
-        % defaultColor
-        % depthHighDensity
         intelFilters
         colorizer
+        distance
     end
     methods
         % CONSTRUCTOR
@@ -49,7 +44,7 @@ classdef getFrames
                 error("You must specify a saved format. Saved formats are:jan, mahelv2, mahelv3");
             end
 
-            frame.cameraParam = cameraParams(); %from calss cameraParams
+            frame.cameraParam = cameraParams(); %from class cameraParams
             frame.isActive=1;
             frame.intelFilters=0;
         end
@@ -119,16 +114,15 @@ classdef getFrames
                 %     // The retunred object should be released with rs2_delete_pipeline_profile(...)
                 profile = pipeline.start(config);
 
+                device = profile.get_device();
+                sensors = device.query_sensors();
+                fprintf("Available sensors: \n");
+                for i=1:length(sensors{1})
+                    fprintf("  -%s\n", sensors{1}{i}.get_info(realsense.camera_info.name))
+                end
+
                 if (frame.cameraParam.depthHighAccuracy == 1 || frame.cameraParam.depthHighDensity==1)
                     % Get the depth sensor and set the preset to high accuracy
-                    device = profile.get_device();
-                    sensors = device.query_sensors();
-                    name = sensors{1}{2}.get_info(realsense.camera_info.name);
-                    fprintf("Available sensors: \n");
-                    for i=1:length(sensors{1})
-                        fprintf("  -%s\n", sensors{1}{i}.get_info(realsense.camera_info.name))
-                    end
-
                     % Set the preset to high accuracy for the depth sensor
                     if(frame.cameraParam.depthHighAccuracy==1)
                         sensors{1}{1}.set_option(realsense.option.visual_preset, 3); %Set the depth to high accuracy (3)
@@ -144,13 +138,15 @@ classdef getFrames
                     %Set the RGB sensor to fixed exposure
                     %sensors{1}{2}.set_option(realsense.option.enable_auto_exposure,0);
                     %sensors{1}{2}.set_option(realsense.option.exposure,500);
-                end
 
+                end
                 frame.cameraPipeline = pipeline;
                 frame.cameraProfile = profile;
 
                 frame.colorizer = realsense.colorizer();
                 frame.colorizer.set_option(realsense.option.color_scheme, 2);
+
+                frame.distance = distanceClass(frame.cameraProfile);
 
                 % Discard the first 10 frames
                 for i = 1:10
@@ -187,21 +183,6 @@ classdef getFrames
             end
             depthProfile = depthStream.as('video_stream_profile');
             intrinsics = depthProfile.get_intrinsics();
-        end
-
-        function dist = dist_3d(frame, intrinsics, upixel, udist, vpixel, vdist)
-            % Deproject from pixel to 3D space using the intrinsic parameters
-            % Using the deprojection formula
-            upoint = [(upixel(1) - intrinsics.ppx) * udist / intrinsics.fx, ...
-                      (upixel(2) - intrinsics.ppy) * udist / intrinsics.fy, ...
-                      udist];  % [X, Y, Z]
-        
-            vpoint = [(vpixel(1) - intrinsics.ppx) * vdist / intrinsics.fx, ...
-                      (vpixel(2) - intrinsics.ppy) * vdist / intrinsics.fy, ...
-                      vdist];  % [X, Y, Z]
-        
-            % Calculate Euclidean distance between two points
-            dist = sqrt(sum((upoint - vpoint).^2));
         end
 
         function [frame, depth, color] = get_frame_from_file(frame)

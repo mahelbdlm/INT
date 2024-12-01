@@ -9,6 +9,7 @@ classdef cameraParams
         FPS
         defaultSizeColor
         depthHighDensity
+        depthScale
     end
     
     methods
@@ -19,6 +20,7 @@ classdef cameraParams
             cameraParams.FPS = 30;
             cameraParams.defaultSizeColor=0;
             cameraParams.depthHighDensity = 1;
+            cameraParams.depthScale = 0;
         end
         
         function cameraParams=setOptimalSize(cameraParams)

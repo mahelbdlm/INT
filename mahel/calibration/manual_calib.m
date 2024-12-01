@@ -31,7 +31,6 @@ try
 
         % Variables to store points and distance text
         points = [];
-        distance_num = [];
     end
 
     % Processing frames in a loop
@@ -40,7 +39,9 @@ try
         disp("Getting frame");
 
         [frame,depthFrame,depth,color] = frame.get_frame_aligned();
-        imshow(depth, []);
+
+        %imshow(depth, []);
+        imshowpair(color, depth);
         title('Select points to measure distance');
 
         % Get the depth stream and intrinsics
@@ -58,45 +59,61 @@ try
             if(button==1)
                 if(size(points,1)==2)
                     points = [];  
-                    distance_num = [];
-                    imshow(depth, []);
+                    %imshow(depth, []);
+                    imshowpair(color, depth);
                 end
 
                 u = round([x(1), y(1)]); % First point
-                upixel = round(u / 2);
-                udist = depthFrame.get_distance(upixel(1), upixel(2));
-                fprintf('Distance to pixel: %.2f meters\n', udist);
+                udistToObject = depthFrame.get_distance(u(1), u(2));
+                if udistToObject>0
+                    upoint3D = frame.distance.deproject_pixel_to_point(u, udistToObject); %Generate the 3D point to calculate
+                                                                                          % the distance between the 2 points
 
-                % Plot points and display distance
-                hold on;
-                plot(u(1), u(2), 'ro', 'MarkerSize', 10);  % Red point for selected point
-                distance_text = sprintf('%.2f m', udist);  % Format the distance as a string
-                % Place the text near the plotted point
-                text(u(1) + 10, u(2) + 10, distance_text, 'Color', 'red', 'FontSize', 12, 'FontWeight', 'bold', 'VerticalAlignment', 'bottom');
-                hold off;
+                    fprintf('Distance to pixel: %.2f meters\n', udistToObject);
 
-                % Store points and text
-                points = [points; u];  % Store points for future use
-                distance_num = [distance_num; udist];
-
-                if(size(points,1)==2)
-                    dist = frame.dist_3d(intrinsics, points, distance_num(1,:), points(2,:), distance_num(2,:));
-                    fprintf("Distance: %.2f\n", dist)
+                    % Plot points and display distance
+                    hold on;
+                    plot(u(1), u(2), 'ro', 'MarkerSize', 10);  % Red point for selected point
+                    distance_text = sprintf('%.2f m', udistToObject);  % Format the distance as a string
+                    % Place the text near the plotted point
+                    text(u(1) + 10, u(2) + 10, distance_text, 'Color', 'red', 'FontSize', 12, 'FontWeight', 'bold', 'VerticalAlignment', 'bottom');
+                    hold off;
+                    % Store points and text
+                    points = [points; upoint3D];  % Store points for future use
+    
+                    if(size(points,1)==2)
+                        dist = frame.distance.getDistance(points(1,:), points(2,:));
+                        fprintf("Distance: %.3f\n", dist)
+                    end
+                else
+                    fprintf("This point was not recognized. Try another.\n")
                 end
-                
-
-                %dist = frame.dist_3d(intrinsics, depthFrame, u, v)
 
             elseif (button == 29) % Right arrow
                 % Clear the previous points and text and get new frame
                 points = [];  % Reset points array
-                distance_num = [];  % Reset distance text array
                 wait_for_points=0;
-            elseif(button==114)
+            elseif (button == 99 || button == 107) % C key or k key
+                prompt = {'Enter the correct distance (m):'};
+                dlg_title = 'Input';
+                num_lines = 1;
+                default_answer = {'0'};  % Default input value
+                answer = inputdlg(prompt, dlg_title, num_lines, default_answer);
+                
+                % Convert the answer to a number
+                user_input = str2double(answer{1});
+                
+                % Display the entered number
+                disp(['You entered: ', num2str(user_input)]);
+
+                cte = (user_input*frame.distance.correctionConstant)/dist;
+                fprintf("The constant to apply to the class is: %f", cte);
+                
+            elseif(button==114) % R key
                 % Clear points
                 points = [];  % Reset points array
-                distance_num = [];  % Reset distance text array
-                imshow(depth, []);
+                % imshow(depth, []);
+                 imshowpair(color, depth);
             else
                 %Display the number of button pressed
                 disp(button);
