@@ -130,7 +130,7 @@ try
 catch error
     % Error handling
      if error.identifier == "MATLAB:UndefinedFunction"
-        fprintf(2, "The modules/class folder was not added to your matlab path.\nIt has now been added and the code execution was restarted.\n");
+        fprintf(2, "The modules/class folder was not added to your matlab path.\nIt has now been added and you need to re-run the code.\n");
         addpath('modules');
         addpath('class');
         rethrow(error);

@@ -34,7 +34,7 @@ and some cursors in order to apply the necessary transformations to match the RG
 
 Upon executing the code: 
 <div align="center">
-    <img height="60%" width="60%" alt="Image from matlab" src="/../main/mahel/img/img6.png?raw=true">
+    <img height="60%" width="60%" alt="Image from matlab" src="https://github.com/user-attachments/assets/24597716-cb69-4e29-9492-64b95491a160">
 </div>
 As it can be seen in the previous picture, the picture can be modified by using the sliders. 
 This allows to control manually how the two pictures overlay. 
@@ -68,7 +68,7 @@ Using a reference (for example a squared box), it is possible to align the RGB a
 
 Upon executing the code: 
 <div align="center">
-    <img height="60%" width="60%" alt="Image from matlab" src="/../main/mahel/img/img5.png?raw=true">
+    <img height="60%" width="60%" alt="Image from matlab" src="https://github.com/user-attachments/assets/0a43458a-88ea-48d6-ba4c-1cc68a0aeb90">
 </div>
 As it can be seen in the previous picture, the picture can be modified by using the sliders. 
 This allows to control manually how the two pictures overlay. 
