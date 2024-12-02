@@ -6,11 +6,11 @@
 clear f;
 clear;
 close all;
-
+targetPath = "mahel/save/test2"; % Path of the video file
 % Connect with default configuration
 try
 
-    frame = getFrames();
+    frame = getFrames(targetPath, "mahelv3");
     frame = frame.init(); % Initialize the frame class
     intrinsics = frame.get_intrinsics(); % Get the camera intrinsics for 3D distance calculation
 
@@ -41,6 +41,7 @@ try
         [frame,depthFrame,depth,color] = frame.get_frame_aligned();
 
         %imshow(depth, []);
+        %depthColorized = permute(reshape(frame.colorizer.colorize(depthFrame).get_data()', [3, depthFrame.get_width(), depthFrame.get_height()]), [3, 2, 1]);
         imshowpair(color, depth);
         title('Select points to measure distance');
 
@@ -59,12 +60,12 @@ try
             if(button==1)
                 if(size(points,1)==2)
                     points = [];  
-                    %imshow(depth, []);
-                    imshowpair(color, depth);
+                    imshowpair(color, depthColorized);
                 end
 
                 u = round([x(1), y(1)]); % First point
-                udistToObject = depthFrame.get_distance(u(1), u(2));
+                udistToObject = frame.getDepth(depth, u);
+                %udistToObject = depthFrame.get_distance(u(1), u(2));
                 if udistToObject>0
                     upoint3D = frame.distance.deproject_pixel_to_point(u, udistToObject); %Generate the 3D point to calculate
                                                                                           % the distance between the 2 points

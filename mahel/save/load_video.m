@@ -6,7 +6,7 @@ targetPath = "mahel/palet_side/europeo1"; % Path of the video file
 fps = 30;
 
 try
-    frame = getFrames(targetPath, "mahelv2"); % The frames will be obtained using the camera and mahel file format
+    frame = getFrames(targetPath, "mahelv3"); % The frames will be obtained using the camera and mahel file format
     %frame = frame.setCameraParams("setDepthHighAccuracy");
     frame = frame.init(); % Initialize the frame class
     

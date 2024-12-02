@@ -13,6 +13,7 @@ classdef getFrames
         file_video
         file_index
         file_depth_original
+        file_intrinsics
         nbFrames
         debugMode
         saveType
@@ -148,6 +149,8 @@ classdef getFrames
 
                 frame.distance = distanceClass(frame.cameraProfile);
 
+                
+
                 % Discard the first 10 frames
                 for i = 1:10
                     pipeline.wait_for_frames();
@@ -162,6 +165,11 @@ classdef getFrames
                     frame.file_color_original= load(path_checked+"/video_color_original.mat").video_color_original;
                     frame.nbFrames = length(frame.file_color_original);
                     frame.file_depth_original= load(path_checked+"/video_depth_original.mat").video_depth_original;
+                elseif frame.saveType=="mahelv3"
+                    frame.file_color_original= load(path_checked+"/video_color.mat").video_color;
+                    frame.nbFrames = length(frame.file_color_original);
+                    frame.file_depth_original= load(path_checked+"/video_depth.mat").video_depth;
+                    frame.file_intrinsics = load(path_checked+"/camera_params.mat").camera_params;
                 elseif frame.saveType=="jan"
                     frame.file_video= load(path_checked+"/video1.mat").video;
                     frame.nbFrames = length(frame.file_video);
@@ -177,12 +185,16 @@ classdef getFrames
         end
 
         function intrinsics = get_intrinsics(frame)
-            depthStream = frame.cameraProfile.get_stream(realsense.stream.depth);
-            if isempty(depthStream)
-                error('Depth stream not available in this profile!');
+            if(frame.type=="camera")
+                depthStream = frame.cameraProfile.get_stream(realsense.stream.depth);
+                if isempty(depthStream)
+                    error('Depth stream not available in this profile!');
+                end
+                depthProfile = depthStream.as('video_stream_profile');
+                intrinsics = depthProfile.get_intrinsics();
+            else
+                intrinsics = frame.file_intrinsics;
             end
-            depthProfile = depthStream.as('video_stream_profile');
-            intrinsics = depthProfile.get_intrinsics();
         end
 
         function [frame, depth, color] = get_frame_from_file(frame)
@@ -194,6 +206,9 @@ classdef getFrames
                 if frame.saveType=="mahelv2"
                     color = frame.file_color_original(frame.file_index).df;
                     depth = frame.file_depth_original(frame.file_index).df;
+                elseif frame.saveType=="mahelv3"
+                    color = frame.file_color_original(frame.file_index).color;
+                    depth = frame.file_depth_original(frame.file_index).depth;
                 elseif frame.saveType=="jan"
                     depth=frame.file_video(frame.file_index).original_depth;
                     color=frame.file_video(frame.file_index).color;
@@ -243,6 +258,22 @@ classdef getFrames
             end
         end
 
+        function distance = getDepth(frame, img, point)
+            %img = squeeze(permute(reshape(depthFrame.get_data()', [[], depthFrame.get_width(), depthFrame.get_height()]), [3,2,1]));
+            if(frame.type=="camera")
+                distance = double(img(point(1), point(2))) * frame.distance.depthScale();
+            else
+                distance = double(img(point(1), point(2))) * frame.file_intrinsics.depth_scale;
+            end
+        end
+
+        function colorizedDepth = get_depth_colorized(frame, depthFrame)
+             if(frame.type=="camera")
+                 colorizedDepth = permute(reshape(depthFrame.get_data()', [3, depthFrame.get_width(), depthFrame.get_height()]), [3, 2, 1]);
+             else
+             end
+        end
+
         function [frame,depthFrame,depth,color] = get_frame_aligned(frame)
             % Get frame aligned to color
             if(frame.type=="camera")
@@ -255,27 +286,29 @@ classdef getFrames
                 color_frame = aligned_color_frames.get_color_frame();
 
 
-                if(class(frame.intelFilters)=="intelFilter")
-                    % Apply filters
-                    depth = frame.intelFilters.decimation.process(depth_frame);
-                    disparity_frame = frame.intelFilters.depth2disparity.process(depth);
-                    depth = frame.intelFilters.spatial.process(disparity_frame);
-                    depth = frame.intelFilters.temporal.process(depth);
-                    depth = frame.intelFilters.disparity2depth.process(depth);
-                    depth = frame.colorizer.colorize(depth);
-                    depth = permute(reshape(depth.get_data()', [3, depth.get_width(), depth.get_height()]), [3, 2, 1]);
-                else
-                    depth_h = depth_frame.get_height();
-                    depth_w = depth_frame.get_width();
-                    depth = permute(reshape(frame.colorizer.colorize(depth_frame).get_data()', [3, depth_w, depth_h]), [3, 2, 1]);
-                end
+                % if(class(frame.intelFilters)=="intelFilter")
+                %     % Apply filters
+                %     depth = frame.intelFilters.decimation.process(depth_frame);
+                %     disparity_frame = frame.intelFilters.depth2disparity.process(depth);
+                %     depth = frame.intelFilters.spatial.process(disparity_frame);
+                %     depth = frame.intelFilters.temporal.process(depth);
+                %     depth = frame.intelFilters.disparity2depth.process(depth);
+                %     depth = frame.colorizer.colorize(depth);
+                %     depthColorized = permute(reshape(depth.get_data()', [3, depth.get_width(), depth.get_height()]), [3, 2, 1]);
+                % else
+                %     depth_h = depth_frame.get_height();
+                %     depth_w = depth_frame.get_width();
+                %     depthColorized = permute(reshape(frame.colorizer.colorize(depth_frame).get_data()', [3, depth_w, depth_h]), [3, 2, 1]);
+                % end
+                depth = squeeze(permute(reshape(depth_frame.get_data()', [[], depth_frame.get_width(), depth_frame.get_height()]), [3,2,1]));
                 color_w=color_frame.get_width();
                 color_h=color_frame.get_height();
                 color_original_rgba = permute(reshape(color_frame.get_data(),[],color_w,color_h), [3, 2, 1]);
                 color = color_original_rgba(:, :, 1:3);
 
             else
-                [frame, depth, color] = get_frame_from_file();
+                depthFrame=0;
+                [frame, depth, color] = frame.get_frame_from_file();
 
             end
         end

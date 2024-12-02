@@ -5,6 +5,7 @@ classdef distanceClass
     properties
         intrinsics
         correctionConstant
+        depthScale
     end
     
     methods
@@ -14,6 +15,7 @@ classdef distanceClass
 
             distanceClass.intrinsics = cameraProfile.get_stream(realsense.stream.depth).as('video_stream_profile').get_intrinsics();
             distanceClass.correctionConstant = 0.640920;
+            distanceClass.depthScale = cameraProfile.get_device().first('depth_sensor').get_depth_scale();
             % Model: 
             % 0 = NONE
             % 1 = MODIFIED_BROWN_CONRADY
