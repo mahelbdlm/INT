@@ -9,7 +9,7 @@ close all;
 
 targetPath = "mahel/save/"; %Target path (respect to INT folder)
 folderName = "europeo";
-nbFrames = 350; % Number of frames to save
+nbFrames = 150; % Number of frames to save
 distanceGroundPalet = 0.14; %14 cm
 
 showpair=1;
@@ -102,3 +102,8 @@ clear f;
 disp('Window closed');
 delete(gcf);  % Close the GUI window
 end
+
+%  color = load("mahel/video_stable/europeo1/video_color.mat");
+%  video_color = struct();
+%  video_color = color.video_color(1:150);
+%  save('mahel/video_stable/europeo1/video_color2.mat',"video_color");

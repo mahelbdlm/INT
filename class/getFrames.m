@@ -325,6 +325,8 @@ classdef getFrames
                 if frame.saveType=="mahelv2"
                     color = frame.file_color_original(indexFrame).df;
                     depth = frame.file_depth_original(indexFrame).df;
+                elseif frame.saveType=="mahelv3"
+                    error("This function can't be used with mahelv3 format for now...");
                 elseif frame.saveType=="jan"
                     depth=frame.file_video(indexFrame).original_depth;
                     color=frame.file_video(indexFrame).color;
