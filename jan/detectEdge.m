@@ -35,7 +35,7 @@ hold off;
 
 I=imrotate(I,90+lines(1).theta);
 if mod(lines(1).theta,90)-45<0
-    hcrop=find(I(:,3)>0,1);
+    hcrop=find(I(:,30)>0,1);
     wcrop=length(I(1,:))-find(I(3,end:-1:1)>0,1);
 end
 if mod(lines(1).theta,90)-45>0

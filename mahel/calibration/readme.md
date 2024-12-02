@@ -4,3 +4,6 @@ Using any known object, you can verify if the calculated distance between two po
 
 Note to self: 
 [Python SDK](https://github.com/IntelRealSense/librealsense/blob/5e73f7bb906a3cbec8ae43e888f182cc56c18692/include/librealsense2/rsutil.h#L69)
+
+![image](https://github.com/user-attachments/assets/3c0dbe5d-8c01-46c9-9030-360821f11467)
+

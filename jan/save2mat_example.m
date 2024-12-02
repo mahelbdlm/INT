@@ -1,7 +1,11 @@
-pause(3);   % you've got 3 seconds to get ready, hurry!
-file_path="jan/save/test_time_"+date;
+pause(5);   % you've got 3 seconds to get ready, hurry!
+file_path="jan/save/test"+date;
 
-fileName=save2mat(file_path,5,'medfilt');
+fileName=save2matfast(file_path,15);
 vidmat=load(fileName);
-vidmat=vidmat.video;
-vidWriterVision(vidmat,"color",vidmat(1).fps,fileName,".avi")
+vidmat=vidmat.video_fast;
+vidWriterVision(vidmat,"colorized_depth",15,fileName,".avi")
+t=0.001*[vidmat.t];
+plot(t)
+%si no és una recta és que no hem respectat fps!!! 
+%palet raro fa 100x120

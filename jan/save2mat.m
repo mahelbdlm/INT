@@ -7,7 +7,7 @@ function [structName]=save2mat(filePath,duration,varargin)
     intel_filters=true;medfilt=false;
     video=struct();
     switch nargin
-        case 4
+        case 3
             if(strcmpi(varargin{1},"medfilt"))
                 intel_filters=false;
                 medfilt=true;
@@ -86,11 +86,11 @@ function [structName]=save2mat(filePath,duration,varargin)
                 img_color=resize(color,width_ref);
                 
                 if medfilt
-                    img_original_depth=medfilter(img_original_depth);
-                    img_aligned_depth=medfilter(img_aligned_depth);       
-                    img_colorized_depth=medfilter(img_colorized_depth);
-                    img_aligned_colorized_depth=medfilter(img_colorized_depth);
-                    img_color=medfilter(img_color);
+                    img_original_depth=medfilter(img_original_depth,2);
+                    img_aligned_depth=medfilter(img_aligned_depth,2);       
+                    img_colorized_depth=medfilter(img_colorized_depth,3);
+                    img_aligned_colorized_depth=medfilter(img_colorized_depth,3);
+                    img_color=medfilter(img_color,3);
                 end
                 video(i).original_depth=img_original_depth;
                 video(i).aligned_depth=img_aligned_depth;
@@ -158,8 +158,13 @@ function [structName]=save2mat(filePath,duration,varargin)
         scale=width_ref/width;
         frame_out=imresize(img,scale);
     end
-    function [I]=medfilter(img)
-        imgclosed=imclose(img,strel('disk',5));
-        I=medfilt2(imgclosed,[20 20],'symmetric');
+    function [I]=medfilter(img,dim)
+        if dim==2
+            imgclosed=imclose(img,strel('disk',8));
+            I=medfilt2(imgclosed,[20 20],'symmetric');
+        elseif dim==3
+            I=img;
+        end
+        
     end
 end
