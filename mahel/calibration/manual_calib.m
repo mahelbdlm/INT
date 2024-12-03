@@ -78,7 +78,7 @@ try
     
                     if(size(points,1)==2)
                         dist = frame.distance.getDistance(points(1,:), points(2,:));
-                        fprintf("Distance: %.3f\n", dist)
+                        fprintf("Distance: %.3f\n", dist);
                     end
                 else
                     fprintf("This point was not recognized. Try another.\n")

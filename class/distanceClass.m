@@ -74,6 +74,8 @@ classdef distanceClass
         % end
 
         function distance = getDistance(distanceClass, upoint_3D, vpoint_3D)
+            % INPUT: upoint_3D, vpoint_3D
+            % OUTPUT: the distance between the two 3D points
             if (length(upoint_3D)~=3 || length(vpoint_3D)~=3)
                 error("The points must be 3D points. You can use deproject_pixel to convert the points to 3D.");
             end

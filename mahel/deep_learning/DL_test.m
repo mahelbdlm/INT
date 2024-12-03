@@ -23,12 +23,12 @@ try
     [frame,depth,color] = frame.get_frame_at_index(78);
 
 
-    % grayImg = rgb2gray(color); % For color image
+    grayImg = rgb2gray(color); % For color image
     % [originalHeight, originalWidth, ~] = size(grayImg);
     % grayImg = imcrop(grayImg,[0 180 originalWidth 140]);
 
-    % tic;
-    [BW,maskedImage] = segmentImage_v1(color);
+    tic;
+    [BW,maskedImage] = segmentImage_v2(grayImg);
 
     S = regionprops(maskedImage,'BoundingBox','Area');
     [MaxArea,MaxIndex] = max(vertcat(S.Area));
@@ -45,12 +45,13 @@ try
     % Extract a cropped image from the original.
     maskedImage = maskedImage(topRow:bottomRow, leftColumn:rightColumn);
     BW = BW(topRow:bottomRow, leftColumn:rightColumn);
+    grayImg = grayImg(topRow:bottomRow, leftColumn:rightColumn);
+    [originalHeight, originalWidth, ~] = size(maskedImage);
     % Display the original gray scale image.
-    figure
-    imshowpair(maskedImage, BW, "montage");
-    return;
+    % figure
+    % imshowpair(maskedImage, BW, "montage");
 
-    % elapsedTime = toc;
+    elapsedTime = toc;
 
     disp(['Elapsed Time: ', num2str(elapsedTime), ' seconds']);
 
@@ -73,8 +74,40 @@ try
     % minLength: minimum length for the line to be accepted
 
     figure;
-    subplot(3,1,1);
-    showHoughLines(edges, linesEdges);
+    subplot(2,1,1);
+    lineLengths = distanceHoughLines(edges, linesEdges);
+    subplot(2,1,2);
+    distanceHoughLines(grayImg, linesEdges);
+
+    numLines = length(lineLengths);
+    similarPairs = [];
+    for i = 1:numLines
+        for j = i+1:numLines
+            if abs(lineLengths(i) - lineLengths(j)) <= 50; %Max length diff is 5
+                similarPairs = [similarPairs; i, j];
+            end
+        end
+    end
+
+    dist_u1 = frame.getDepth(depth, linesEdges(similarPairs(1)).point1);
+    dist_v1 = frame.getDepth(depth, linesEdges(similarPairs(1)).point2);
+
+    dist_u2 = frame.getDepth(depth, linesEdges(similarPairs(2)).point1);
+    dist_v2 = frame.getDepth(depth, linesEdges(similarPairs(2)).point2);
+
+    point_3D_u1 = frame.distance.deproject_pixel_to_point(linesEdges(similarPairs(1)).point1, dist_u1);
+    point_3D_v1 = frame.distance.deproject_pixel_to_point(linesEdges(similarPairs(1)).point2, dist_v1);
+
+    point_3D_u2 = frame.distance.deproject_pixel_to_point(linesEdges(similarPairs(2)).point1, dist_u2);
+    point_3D_v2 = frame.distance.deproject_pixel_to_point(linesEdges(similarPairs(2)).point2, dist_v2);
+
+    dist_1 = frame.distance.getDistance(point_3D_u1, point_3D_v1);
+    dist_2 = frame.distance.getDistance(point_3D_u2, point_3D_v2);
+    fprintf("Distance: %.3f or %.3f\n", dist_1, dist_2);
+    return;
+
+
+    % lineLengthsBigPicture = showHoughLines(edges, linesEdges);
 
     if false
         subplot(3,1,2);
@@ -116,7 +149,7 @@ try
         l2_px1 = linesEdges_l(similarPairs(2)).point1;
         l2_px2 = linesEdges_l(similarPairs(2)).point2;
     else
-        error("More than 2 lines were detected");
+        error("More than 2 lines of the same distance were detected");
     end
 
 catch error
