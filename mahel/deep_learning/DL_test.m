@@ -10,39 +10,53 @@ imagesv1Exist=0;
 
 clear;
 close all;
-targetPath = "mahel/detect_missing_part/missing_splinter1"; % Path of the video file
+targetPath = "mahel/video_stable/europeo1_max"; % Path of the video file
 % Camera if you want to use
 % the camera
 
 % Connect with default configuration
 try
-    try
-        BW=imread("mahel/deep_learning/BW.jpg");
-        maskedImage=imread("mahel/deep_learning/masked.jpg");
-        imagesv2Exist=1;
-    catch errorv1
-        imagesv2Exist=0;
-    end
 
-    if(~imagesv2Exist)
-        frame = getFrames(targetPath,"mahelv2"); % The frames will be obtained using the camera and mahel file format
-        frame = frame.init(); % Initialize the frame class
-        [frame,depth,color] = frame.get_frame_at_index(25);
-    
-        grayImg = rgb2gray(color); % For color image
-        [originalHeight, originalWidth, ~] = size(grayImg);
-        grayImg = imcrop(grayImg,[0 180 originalWidth 140]);
-    
-   
-        tic;
-        [BW,maskedImage] = segmentImage_v4(grayImg);
-        elapsedTime = toc;
 
-        disp(['Elapsed Time: ', num2str(elapsedTime), ' seconds']);
-    
-        %imwrite(BW, "mahel/deep_learning/BW.jpg");
-        %imwrite(maskedImage, "mahel/deep_learning/masked.jpg");
-    end
+    frame = getFrames(targetPath,"mahelv3"); % The frames will be obtained using the camera and mahel file format
+    frame = frame.init(); % Initialize the frame class
+    [frame,depth,color] = frame.get_frame_at_index(78);
+
+
+    % grayImg = rgb2gray(color); % For color image
+    % [originalHeight, originalWidth, ~] = size(grayImg);
+    % grayImg = imcrop(grayImg,[0 180 originalWidth 140]);
+
+    % tic;
+    [BW,maskedImage] = segmentImage_v1(color);
+
+    S = regionprops(maskedImage,'BoundingBox','Area');
+    [MaxArea,MaxIndex] = max(vertcat(S.Area));
+    Length = S(MaxIndex).BoundingBox(3);
+    Height = S(MaxIndex).BoundingBox(4);
+    % Cropping the image
+    % Get all rows and columns where the image is nonzero
+    [nonZeroRows,nonZeroColumns] = find(maskedImage);
+    % Get the cropping parameters
+    topRow = min(nonZeroRows(:));
+    bottomRow = max(nonZeroRows(:));
+    leftColumn = min(nonZeroColumns(:));
+    rightColumn = max(nonZeroColumns(:));
+    % Extract a cropped image from the original.
+    maskedImage = maskedImage(topRow:bottomRow, leftColumn:rightColumn);
+    BW = BW(topRow:bottomRow, leftColumn:rightColumn);
+    % Display the original gray scale image.
+    figure
+    imshowpair(maskedImage, BW, "montage");
+    return;
+
+    % elapsedTime = toc;
+
+    disp(['Elapsed Time: ', num2str(elapsedTime), ' seconds']);
+
+    %imwrite(BW, "mahel/deep_learning/BW.jpg");
+    %imwrite(maskedImage, "mahel/deep_learning/masked.jpg");
+
 
     edges = edge(BW, 'canny');
 
@@ -58,7 +72,6 @@ try
     %fillGap: Distance between 2 lines to be considered a single line
     % minLength: minimum length for the line to be accepted
 
-
     figure;
     subplot(3,1,1);
     showHoughLines(edges, linesEdges);
@@ -68,7 +81,7 @@ try
         cornersEigen = detectMinEigenFeatures(grayImg);
         imshow(grayImg); hold on;
         plot(cornersEigen.selectStrongest(50));
-    
+
         cornersHarris = detectHarrisFeatures(grayImg);
         subplot(3,1,3);
         imshow(grayImg); hold on;
@@ -80,12 +93,12 @@ try
     subplot(3,2,3);
     imshow(edgesLeft);
     subplot(3,2,4);
-    
+
     [Hl,Tl,Rl]=hough(edgesLeft);
     Pl  = houghpeaks(Hl,50,'threshold',ceil(0.5*max(Hl(:))));
     linesEdges_l = houghlines(edgesLeft,Tl,Rl,Pl,'FillGap',50,'MinLength',3);
     lineLengths = showHoughLines(edgesLeft, linesEdges_l);
-    
+
     numLines = length(lineLengths);
     similarPairs = [];
     for i = 1:numLines

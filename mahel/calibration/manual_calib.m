@@ -10,9 +10,9 @@ targetPath = "mahel/save/test2"; % Path of the video file
 % Connect with default configuration
 try
 
-    frame = getFrames(targetPath, "mahelv3");
+    %frame = getFrames(targetPath, "mahelv3");
+    frame = getFrames();
     frame = frame.init(); % Initialize the frame class
-    intrinsics = frame.get_intrinsics(); % Get the camera intrinsics for 3D distance calculation
 
     % Create figure if it doesn't exist
     if ~exist("f", "var")
@@ -34,24 +34,17 @@ try
     end
 
     % Processing frames in a loop
-    while ishandle(f)
+    while (ishandle(f) && frame.isActive)
         % Wait for a new frame set
         disp("Getting frame");
 
-        [frame,depthFrame,depth,color] = frame.get_frame_aligned();
+        [frame,depth,color] = frame.get_frame_aligned();
+        fprintf("Key shortcuts:\n    - Right arrow -> Next frame\n    - C or K key: Calculate the constant prompting the correct size\n    - R key: Reset the points\n");
 
         %imshow(depth, []);
         %depthColorized = permute(reshape(frame.colorizer.colorize(depthFrame).get_data()', [3, depthFrame.get_width(), depthFrame.get_height()]), [3, 2, 1]);
         imshowpair(color, depth);
         title('Select points to measure distance');
-
-        % Get the depth stream and intrinsics
-        %depthStream = profile.get_stream(realsense.stream.depth);
-        %if isempty(depthStream)
-        %    error('Depth stream not available in this profile!');
-        %end
-        %depthProfile = depthStream.as('video_stream_profile');
-        %intrinsics = depthProfile.get_intrinsics();
 
         wait_for_points = 1; %wait_for_points will be disabled by button
         while wait_for_points==1
@@ -60,12 +53,13 @@ try
             if(button==1)
                 if(size(points,1)==2)
                     points = [];  
-                    imshowpair(color, depthColorized);
+                    imshowpair(color, depth);
                 end
 
                 u = round([x(1), y(1)]); % First point
                 udistToObject = frame.getDepth(depth, u);
                 %udistToObject = depthFrame.get_distance(u(1), u(2));
+                                                    %Original function
                 if udistToObject>0
                     upoint3D = frame.distance.deproject_pixel_to_point(u, udistToObject); %Generate the 3D point to calculate
                                                                                           % the distance between the 2 points
@@ -109,6 +103,7 @@ try
 
                 cte = (user_input*frame.distance.correctionConstant)/dist;
                 fprintf("The constant to apply to the class is: %f", cte);
+                frame.distance.correctionConstant = cte;
                 
             elseif(button==114) % R key
                 % Clear points
@@ -121,10 +116,16 @@ try
             end
         end
     end
+    if(~frame.isActive)
+        fprintf("This was the last frame of the file saved");
+    end
 
 catch error
     % Error handling
     if error.identifier == "MATLAB:UndefinedFunction"
+
+        %contains(error.message, "getFrames")
+
         fprintf(2, "The modules/class folder was not added to your matlab path.\nIt has now been added and you need to re-run the code.\n");
         addpath('modules');
         addpath('class');

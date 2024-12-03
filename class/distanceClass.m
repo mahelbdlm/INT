@@ -1,6 +1,13 @@
 classdef distanceClass
     %GETDISTANCE Summary of this class goes here
-    %   Detailed explanation goes here
+    % This class manages all things related to distance using the depth
+    % camera. 
+    % It introduces a code to convert the depth point to a 3D point in
+    % order to measure the distance in the 2D plane.
+    % It also introduces a constant called correctionConstant that was
+    % determined using a calibration algorithm and a ruler. Applying this
+    % correction factor (assuming the error is constant) makes the measure
+    % of sizes more precise.
     
     properties
         intrinsics
@@ -9,13 +16,21 @@ classdef distanceClass
     end
     
     methods
-        function distanceClass = distanceClass(cameraProfile)
-            % GETDISTANCE Construct an instance of this class
-            % Detailed explanation goes here
+        function distanceClass = distanceClass(type, arg2)
+            distanceClass.correctionConstant = 0.649936; 
+                                            % Last value: 0.640920
 
-            distanceClass.intrinsics = cameraProfile.get_stream(realsense.stream.depth).as('video_stream_profile').get_intrinsics();
-            distanceClass.correctionConstant = 0.640920;
-            distanceClass.depthScale = cameraProfile.get_device().first('depth_sensor').get_depth_scale();
+            if type=="camera"
+                % In this case, arg2 is the camera profile
+                distanceClass.intrinsics = arg2.get_stream(realsense.stream.depth).as('video_stream_profile').get_intrinsics();
+                distanceClass.depthScale = arg2.get_device().first('depth_sensor').get_depth_scale();
+            else %From local file
+                % In this case, arg2 is the intrinsics from the file
+                distanceClass.intrinsics = arg2;
+                distanceClass.depthScale = arg2.depth_scale;
+
+            end
+
             % Model: 
             % 0 = NONE
             % 1 = MODIFIED_BROWN_CONRADY

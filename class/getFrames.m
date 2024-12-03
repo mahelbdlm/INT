@@ -144,10 +144,7 @@ classdef getFrames
                 frame.cameraPipeline = pipeline;
                 frame.cameraProfile = profile;
 
-                frame.colorizer = realsense.colorizer();
-                frame.colorizer.set_option(realsense.option.color_scheme, 2);
-
-                frame.distance = distanceClass(frame.cameraProfile);
+                frame.distance = distanceClass(frame.type, frame.cameraProfile);
 
                 
 
@@ -169,7 +166,8 @@ classdef getFrames
                     frame.file_color_original= load(path_checked+"/video_color.mat").video_color;
                     frame.nbFrames = length(frame.file_color_original);
                     frame.file_depth_original= load(path_checked+"/video_depth.mat").video_depth;
-                    frame.file_intrinsics = load(path_checked+"/camera_params.mat").camera_params;
+                    frame.distance = distanceClass(frame.type, load(path_checked+"/camera_params.mat").camera_params); % Initialize distance class
+
                 elseif frame.saveType=="jan"
                     frame.file_video= load(path_checked+"/video1.mat").video;
                     frame.nbFrames = length(frame.file_video);
@@ -181,21 +179,23 @@ classdef getFrames
                     fprintf("nbFrames: %d, size_color: %d, size_depth: %d\n", frame.nbFrames, length(frame.file_color_original.df),length(frame.file_depth_original.df))
                 end
             end
+            frame.colorizer = realsense.colorizer();
+            frame.colorizer.set_option(realsense.option.color_scheme, 2);
 
         end
 
-        function intrinsics = get_intrinsics(frame)
-            if(frame.type=="camera")
-                depthStream = frame.cameraProfile.get_stream(realsense.stream.depth);
-                if isempty(depthStream)
-                    error('Depth stream not available in this profile!');
-                end
-                depthProfile = depthStream.as('video_stream_profile');
-                intrinsics = depthProfile.get_intrinsics();
-            else
-                intrinsics = frame.file_intrinsics;
-            end
-        end
+        % function intrinsics = get_intrinsics(frame)
+        %     if(frame.type=="camera")
+        %         depthStream = frame.cameraProfile.get_stream(realsense.stream.depth);
+        %         if isempty(depthStream)
+        %             error('Depth stream not available in this profile!');
+        %         end
+        %         depthProfile = depthStream.as('video_stream_profile');
+        %         intrinsics = depthProfile.get_intrinsics();
+        %     else
+        %         intrinsics = frame.file_intrinsics;
+        %     end
+        % end
 
         function [frame, depth, color] = get_frame_from_file(frame)
             if(frame.type=="local")
@@ -227,6 +227,7 @@ classdef getFrames
         end
 
         function [frame,depth,color] = get_frame_original(frame)
+            error("This function is deprecated and should not be used. Use instead get_frame_aligned.\n")
             if(frame.type=="camera")
 
                 frames_camera = frame.cameraPipeline.wait_for_frames();
@@ -260,21 +261,17 @@ classdef getFrames
 
         function distance = getDepth(frame, img, point)
             %img = squeeze(permute(reshape(depthFrame.get_data()', [[], depthFrame.get_width(), depthFrame.get_height()]), [3,2,1]));
-            if(frame.type=="camera")
-                distance = double(img(point(1), point(2))) * frame.distance.depthScale();
-            else
-                distance = double(img(point(1), point(2))) * frame.file_intrinsics.depth_scale;
-            end
+            distance = double(img(point(2), point(1))) * frame.distance.depthScale;
         end
 
-        function colorizedDepth = get_depth_colorized(frame, depthFrame)
-             if(frame.type=="camera")
-                 colorizedDepth = permute(reshape(depthFrame.get_data()', [3, depthFrame.get_width(), depthFrame.get_height()]), [3, 2, 1]);
-             else
-             end
-        end
+        % function colorizedDepth = get_depth_colorized(frame, depthFrame)
+        %      if(frame.type=="camera")
+        %          colorizedDepth = permute(reshape(depthFrame.get_data()', [3, depthFrame.get_width(), depthFrame.get_height()]), [3, 2, 1]);
+        %      else
+        %      end
+        % end
 
-        function [frame,depthFrame,depth,color] = get_frame_aligned(frame)
+        function [frame,depth,color] = get_frame_aligned(frame)
             % Get frame aligned to color
             if(frame.type=="camera")
 
@@ -282,7 +279,7 @@ classdef getFrames
                 align_to_color = realsense.align(realsense.stream.color);
                 aligned_color_frames = align_to_color.process(frames_camera);
                 depth_frame = aligned_color_frames.get_depth_frame();
-                depthFrame = depth_frame.as('depth_frame');
+                %depthFrame = depth_frame.as('depth_frame');
                 color_frame = aligned_color_frames.get_color_frame();
 
 
@@ -307,7 +304,6 @@ classdef getFrames
                 color = color_original_rgba(:, :, 1:3);
 
             else
-                depthFrame=0;
                 [frame, depth, color] = frame.get_frame_from_file();
 
             end
@@ -316,26 +312,8 @@ classdef getFrames
 
 
         function [frame,depth,color] = get_frame_at_index(frame, indexFrame)
-            if(frame.type=="camera")
-                error("This function can't be used when getting frames from the camera.");
-
-            else
-                % Get frame from file
-
-                if frame.saveType=="mahelv2"
-                    color = frame.file_color_original(indexFrame).df;
-                    depth = frame.file_depth_original(indexFrame).df;
-                elseif frame.saveType=="mahelv3"
-                    error("This function can't be used with mahelv3 format for now...");
-                elseif frame.saveType=="jan"
-                    depth=frame.file_video(indexFrame).original_depth;
-                    color=frame.file_video(indexFrame).color;
-                else
-                    error("This format does not exist or was not appropriately defined in the class.");
-                end
-
-            end
-
+            frame.file_index = indexFrame;
+            [frame, depth, color] = get_frame_from_file(frame);
         end
 
 
