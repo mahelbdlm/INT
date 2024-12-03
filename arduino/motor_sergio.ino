@@ -2,8 +2,15 @@
 //to turnOn (lock), turnOff and spin indefinitely until 0 is sent, respectively
 //Added code to implement a push-button to activate the motor and a potentiometer 100K to vary the rpm.
 //Also added potentiometer 1K to the 12V supply for control.
+
+//Update: 28/11/2024
 //Added booting function to let the motor start slowly pulling the pallet until it reaches the wanted speed.
+
+//Update: 2/12/2024
+//Included library HalfStepper.h to use Half-Stepper mode control. It should give more torque and stability
+
 #include <Stepper.h>
+#include <HalfStepper.h>
 
 int val = 0;
 int rpm = 300;
@@ -17,6 +24,7 @@ int enable_arr = 0;
 
 
 Stepper myStepper(stepsPerRevolution, 8, 9, 10, 11);
+//HalfStepper _Motor(stepsPerRevolution, 8, 9, 10, 11, SteppingMode::HALF);
 
 void turnOn() {
   Serial.println("Motor ON");
@@ -37,7 +45,9 @@ void turnOff() {
 void arranque() {
   for (int i=150; i<rpm; i+=1) {
       myStepper.setSpeed(i);
+      //_Motor.setSpeed(i);
       myStepper.step(10);
+      //_Motor.step(20);  //Half-Step uses half the step angle --> 0.8º/step
   }
 }
 
@@ -62,7 +72,9 @@ void loop() {
     enable_arr = 0;
     //Velocidad constante
     myStepper.setSpeed(rpm);
+    //_Motor.setSpeed(rpm);
     myStepper.step(stepsPerRevolution);
+    //_Motor.step(stepsPerRevolution);
     
     buttonState = digitalRead(buttonPin);
   }
