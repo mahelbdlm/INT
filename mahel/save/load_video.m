@@ -2,7 +2,7 @@
 
 clear;
 close all;
-targetPath = "mahel/palet_side/europeo1"; % Path of the video file
+targetPath = "mahel/save/europeo1"; % Path of the video file
 fps = 30;
 
 try

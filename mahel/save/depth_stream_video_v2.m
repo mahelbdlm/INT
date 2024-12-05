@@ -49,7 +49,7 @@ try
         % Wait for a new frame set
         %disp("Getting frame");
 
-        [frame,depth,color] = frame.get_frame_original();
+        [frame,depth,color] = frame.get_frame_aligned();
 
         imshowpair(depth,color,"montage");
     end

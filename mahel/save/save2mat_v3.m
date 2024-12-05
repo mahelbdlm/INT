@@ -9,7 +9,7 @@ close all;
 
 targetPath = "mahel/save/"; %Target path (respect to INT folder)
 folderName = "europeo";
-nbFrames = 150; % Number of frames to save
+nbFrames = 140; % Number of frames to save
 distanceGroundPalet = 0.14; %14 cm
 
 showpair=1;
@@ -29,7 +29,7 @@ try
 
     frame = getFrames();
     frame = frame.init();
-    camera_params = frame.get_intrinsics(); % Get the camera intrinsics for 3D distance calculation
+    camera_params = frame.distance.intrinsics; % Get the camera intrinsics for 3D distance calculation
     camera_params.depth_scale = frame.distance.depthScale; % Get the depth scale from the camera
     camera_params.version = "mahelv3";
     camera_params.align_to_color=1;
@@ -39,22 +39,23 @@ try
         % Wait for a new frame set
         fprintf("Getting frame %d/%d\n", i, nbFrames);
 
-        [frame,depthFrame,depth,color] = frame.get_frame_aligned();
+        [frame,depth,color] = frame.get_frame_aligned();
 
-        if i==1
-            t0=depthFrame.get_timestamp();
-        end
+        % if i==1
+        %     t0=depthFrame.get_timestamp();
+        % end
 
         video_depth(i).depth = depth;
-        video_depth(i).t=depthFrame.get_timestamp()-t0;
+        % video_depth(i).t=depthFrame.get_timestamp()-t0;
 
         video_color(i).color = color;
-        video_color(i).t=depthFrame.get_timestamp()-t0;
+        % video_color(i).t=depthFrame.get_timestamp()-t0;
 
 
         if showpair==1
-            depthColorized = permute(reshape(frame.colorizer.colorize(depthFrame).get_data()', [3, depthFrame.get_width(), depthFrame.get_height()]), [3, 2, 1]);
-            imshowpair(color, depthColorized);
+            % depthColorized = permute(reshape(frame.colorizer.colorize(depthFrame).get_data()', [3, depthFrame.get_width(), depthFrame.get_height()]), [3, 2, 1]);
+            % imshowpair(color, depthColorized);
+            imshow(color);
         end
     end
 
