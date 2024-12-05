@@ -59,7 +59,7 @@ try
     %imwrite(maskedImage, "mahel/deep_learning/masked.jpg");
 
 
-    edges = edge(BW, 'canny');
+    edges = edge(maskedImage, 'canny');
 
     [H,T,R]=hough(edges);
 
