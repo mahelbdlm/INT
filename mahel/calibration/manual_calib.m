@@ -6,12 +6,13 @@
 clear f;
 clear;
 close all;
-targetPath = "mahel/save/test2"; % Path of the video file
+targetPath = "mahel/video_stable/europeo6"; % Path of the video file
 % Connect with default configuration
 try
 
-    %frame = getFrames(targetPath, "mahelv3");
-    frame = getFrames();
+    frame = getFrames(targetPath, "mahelv3");
+    % frame = getFrames();
+    frame = frame.set_frame_number(10);
     frame = frame.init(); % Initialize the frame class
 
     % Create figure if it doesn't exist

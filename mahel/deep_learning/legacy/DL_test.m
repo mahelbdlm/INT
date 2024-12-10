@@ -10,7 +10,7 @@ imagesv1Exist=0;
 
 clear;
 close all;
-targetPath = "mahel/video_stable/europeo1_max"; % Path of the video file
+targetPath = "mahel/video_stable/europeo6"; % Path of the video file
 % Camera if you want to use
 % the camera
 
@@ -20,7 +20,10 @@ try
 
     frame = getFrames(targetPath,"mahelv3"); % The frames will be obtained using the camera and mahel file format
     frame = frame.init(); % Initialize the frame class
-    [frame,depth,color] = frame.get_frame_at_index(78);
+    [frame,depth,color] = frame.get_frame_at_index(10);
+    
+    % imshow(color);
+    % return;
 
 
     grayImg = rgb2gray(color); % For color image
@@ -28,28 +31,36 @@ try
     % grayImg = imcrop(grayImg,[0 180 originalWidth 140]);
 
     tic;
-    [BW,maskedImage] = segmentImage_v2(grayImg);
+    [BW,maskedImage] = segmentImage_DL_FULL(grayImg);
+    
+    return;
 
-    S = regionprops(maskedImage,'BoundingBox','Area');
-    [MaxArea,MaxIndex] = max(vertcat(S.Area));
-    Length = S(MaxIndex).BoundingBox(3);
-    Height = S(MaxIndex).BoundingBox(4);
-    % Cropping the image
-    % Get all rows and columns where the image is nonzero
-    [nonZeroRows,nonZeroColumns] = find(maskedImage);
-    % Get the cropping parameters
-    topRow = min(nonZeroRows(:));
-    bottomRow = max(nonZeroRows(:));
-    leftColumn = min(nonZeroColumns(:));
-    rightColumn = max(nonZeroColumns(:));
-    % Extract a cropped image from the original.
-    maskedImage = maskedImage(topRow:bottomRow, leftColumn:rightColumn);
-    BW = BW(topRow:bottomRow, leftColumn:rightColumn);
-    grayImg = grayImg(topRow:bottomRow, leftColumn:rightColumn);
-    [originalHeight, originalWidth, ~] = size(maskedImage);
-    % Display the original gray scale image.
-    % figure
-    % imshowpair(maskedImage, BW, "montage");
+    edges = edge(rgb2gray(maskedImageV2), 'canny');
+
+    % grayImgRight = imcrop(maskedImage,[340.5 349.5 235 86]);
+    % edgesRight = edge(maskedImageV2, 'canny');
+
+
+    % S = regionprops(maskedImage,'BoundingBox','Area');
+    % [MaxArea,MaxIndex] = max(vertcat(S.Area));
+    % Length = S(MaxIndex).BoundingBox(3);
+    % Height = S(MaxIndex).BoundingBox(4);
+    % % Cropping the image
+    % % Get all rows and columns where the image is nonzero
+    % [nonZeroRows,nonZeroColumns] = find(maskedImage);
+    % % Get the cropping parameters
+    % topRow = min(nonZeroRows(:));
+    % bottomRow = max(nonZeroRows(:));
+    % leftColumn = min(nonZeroColumns(:));
+    % rightColumn = max(nonZeroColumns(:));
+    % % Extract a cropped image from the original.
+    % maskedImage = maskedImage(topRow:bottomRow, leftColumn:rightColumn);
+    % BW = BW(topRow:bottomRow, leftColumn:rightColumn);
+    % grayImg = grayImg(topRow:bottomRow, leftColumn:rightColumn);
+    % [originalHeight, originalWidth, ~] = size(maskedImage);
+    % % Display the original gray scale image.
+    % % figure
+    % % imshowpair(maskedImage, BW, "montage");
 
     elapsedTime = toc;
 
@@ -63,21 +74,23 @@ try
 
     [H,T,R]=hough(edges);
 
-    P  = houghpeaks(H,50,'threshold',ceil(0.5*max(H(:))));
+    P  = houghpeaks(H,3,'threshold',ceil(0.5*max(H(:))));
     %numPeaks (after H): Maximum number of peaks to detect
     %ceil(xx*max...): Minimum value to be considered a peak
     % The larger the line, the higher the peak. By filtering to a high
     % value, we select the largest lines
 
-    linesEdges = houghlines(edges,T,R,P,'FillGap',150,'MinLength',3);
+    linesEdges = houghlines(edges,T,R,P,'FillGap',20,'MinLength',3);
     %fillGap: Distance between 2 lines to be considered a single line
     % minLength: minimum length for the line to be accepted
 
-    figure;
-    subplot(2,1,1);
+    figure(1);
     lineLengths = distanceHoughLines(edges, linesEdges);
-    subplot(2,1,2);
-    distanceHoughLines(grayImg, linesEdges);
+
+    % subplot(2,1,1);
+    % lineLengths = distanceHoughLines(edges, linesEdges);
+    % subplot(2,1,2);
+    % distanceHoughLines(grayImg, linesEdges);
 
     numLines = length(lineLengths);
     similarPairs = [];

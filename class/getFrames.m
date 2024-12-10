@@ -48,6 +48,7 @@ classdef getFrames
             frame.cameraParam = cameraParams(); %from class cameraParams
             frame.isActive=1;
             frame.intelFilters=0;
+            frame.file_index = 1;
         end
 
         function frame=enableIntelFilters(frame)
@@ -146,7 +147,7 @@ classdef getFrames
 
                 frame.distance = distanceClass(frame.type, frame.cameraProfile);
 
-                
+
 
                 % Discard the first 10 frames
                 for i = 1:10
@@ -156,7 +157,6 @@ classdef getFrames
             else
                 % Get frame from video
                 path_checked=checkPath(frame.path); % Check if the user is on the right folder for the path
-                frame.file_index = 1;
 
                 if frame.saveType=="mahelv2"
                     frame.file_color_original= load(path_checked+"/video_color_original.mat").video_color_original;
@@ -196,6 +196,10 @@ classdef getFrames
         %         intrinsics = frame.file_intrinsics;
         %     end
         % end
+
+        function frame = set_frame_number(frame, numberFrame)
+            frame.file_index = numberFrame;
+        end
 
         function [frame, depth, color] = get_frame_from_file(frame)
             if(frame.type=="local")
@@ -262,6 +266,31 @@ classdef getFrames
         function distance = getDepth(frame, img, point)
             %img = squeeze(permute(reshape(depthFrame.get_data()', [[], depthFrame.get_width(), depthFrame.get_height()]), [3,2,1]));
             distance = double(img(point(2), point(1))) * frame.distance.depthScale;
+
+            if distance == 0
+                % Define the neighborhood boundaries (clipping at image edges)
+                range = 5; % Search range
+                xMin = max(1, point(1) - range);
+                xMax = min(size(img, 2), point(1) + range);
+                yMin = max(1, point(2) - range);
+                yMax = min(size(img, 1), point(2) + range);
+
+                % Extract the neighborhood
+                neighborhood = double(img(yMin:yMax, xMin:xMax));
+
+                % Find the maximum value in the neighborhood (ignoring zeros)
+                maxValue = max(neighborhood(neighborhood > 0));
+
+                if ~isempty(maxValue)
+                    % If a valid maximum is found, calculate and return the distance
+                    distance = maxValue * frame.distance.depthScale;
+                else
+                    % Throw an error if no valid values are found
+                    error('No valid depth values found in the specified neighborhood.');
+                end
+            end
+
+
         end
 
         % function colorizedDepth = get_depth_colorized(frame, depthFrame)
