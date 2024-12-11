@@ -38,7 +38,7 @@ This format splits each section onto separate files. This allows for smaller fil
 It does not yet include fps and time for each frame.
 
 **mahelv3 format**: 
-This format yet not public will bring new possibilities to saving the content, such as timestamp saving, depth intrinsics save, etc... It is not yet functional.
+This format only saves the depth aligned to color and color frames. It also stores the camera intrinsics in a separate file to be able to measure distances.
 
 </details>
 
