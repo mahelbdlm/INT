@@ -5,22 +5,25 @@ That’s why every warehouse is equipped with a PIE (or Product Inspection Entry
 The objective of this project is to detect the defects a palet can have using 3D cameras. 
 To do this, we will use MATLAB and the intel realsense D435i. 
 
-> [!IMPORTANT]
-> This project is currently at early stage. Each team member is working on some parts which will then be assembled into one general folder for each functionnality the system must have.
+> [!CAUTION]
+> This project has reached its end of development. It will not be updated as of December 12 2024. 
 
 > [!NOTE]
 > Custom classes have been defined in this project (```getFrames```, ```getDistance```,...). Their purpose is to facilitate the transition between frames from the camera and saved frames. This was an approach to standarize the code between each member of the team, and facilitate bulk changes.
 
 # TWO DISTINCTS PARTS
-This project will be divided into two distinct parts:
+This project will be divided into several parts:
 
 1. Detection of the palet from below
-2. Detection of the palet from the sides
+2. Detection of the palet from a perspective
+3. Palet integrity
 
 More information about each section will be provided below. 
 
 > [!WARNING]
-> Due to budget cuts in our project, only two out of three cameras will be available. One will be placed below the palet, and the other on one side. 
+> Due to budget cuts in our project, only two out of three cameras will be available. One will be placed below the palet, and the other on one side.
+
+The cameras used are intel realsense D435i
 
 <details>
 
@@ -36,24 +39,28 @@ Palets can have many diferent defects, from missing the EU sign to missing parts
 In this project we will treat the following defects: 
 * Incorrect sizes
 * Missing panel
-* TBD
 
 </details>
-
-## Detection of the palet from the sides
-<div align="center">
-    <img height="60%" width="60%" alt="Image" src="https://github.com/user-attachments/assets/8f85b794-b99f-4169-b10d-4218a8bd55a7">
-</div>
-One camera will capture the palet using this angle. This will help us identify the following issues: 
-
-1. Incorrect sizes
-   - Detecting the squares of the palet, we can identify if the palet is european
-2. Missing panel
 
 ## Detection of the palet from below
 <div align="center">
     <img height="30%" width="30%" alt="Image" src="https://github.com/user-attachments/assets/39c15630-afaa-466e-b110-62b829ce1f09">
 </div>
+
+[TODO: add more info]
+
+## Detection of the palet with perspective
+<div align="center">
+    <img height="60%" width="60%" alt="Image" src="https://github.com/user-attachments/assets/5f1875cf-8dd7-4075-9e44-e8ceb45cc67f">
+</div>
+One camera will capture the palet using this angle. This will help us identify the following issues: 
+
+1. Incorrect sizes
+   - Detecting the squares of the palet, we can identify the palet sizes
+2. Missing panel
+
+More information about these codes can be found [here](mahel/readme.md)
+
 
 # PROTOTYPE
 This code will be used with a physical prototype. 
