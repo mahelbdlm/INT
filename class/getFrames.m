@@ -13,7 +13,6 @@ classdef getFrames
         file_video
         file_index
         file_depth_original
-        file_intrinsics
         nbFrames
         debugMode
         saveType
@@ -71,6 +70,17 @@ classdef getFrames
                 error('Method "%s" does not exist in the cameraParams class.', methodName);
             end
         end
+
+        function frame = setDistanceClass(frame, methodName, varargin)
+            % Check if the method exists in the cameraParams class
+            if ismethod(frame.distance, methodName)
+                % Dynamically call the specified method with arguments
+                frame.distance = frame.distance.(methodName)(varargin{:});
+            else
+                error('Method "%s" does not exist in the distanceClass class.', methodName);
+            end
+        end
+
         function frame = init(frame)
             if(frame.type=="camera")
                 ctx =realsense.context();
@@ -183,19 +193,6 @@ classdef getFrames
             frame.colorizer.set_option(realsense.option.color_scheme, 2);
 
         end
-
-        % function intrinsics = get_intrinsics(frame)
-        %     if(frame.type=="camera")
-        %         depthStream = frame.cameraProfile.get_stream(realsense.stream.depth);
-        %         if isempty(depthStream)
-        %             error('Depth stream not available in this profile!');
-        %         end
-        %         depthProfile = depthStream.as('video_stream_profile');
-        %         intrinsics = depthProfile.get_intrinsics();
-        %     else
-        %         intrinsics = frame.file_intrinsics;
-        %     end
-        % end
 
         function frame = set_frame_number(frame, numberFrame)
             frame.file_index = numberFrame;

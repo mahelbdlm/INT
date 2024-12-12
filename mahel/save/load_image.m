@@ -6,18 +6,19 @@
 
 clear;
 close all;
-targetPath = "mahel/save/test_time_25-Nov-2024"; % Path of the video file
+targetPath = "mahel/detect_missing_part/missing_splinter1"; % Path of the video file
 % Camera if you want to use
 % the camera
 
 % Connect with default configuration
 try
 
-    frame = getFrames(targetPath,"jan"); % The frames will be obtained using the camera and mahel file format
+    frame = getFrames(targetPath,"mahelv2"); % The frames will be obtained using the camera and mahel file format
     frame = frame.init(); % Initialize the frame class
-    [frame,depth,color] = frame.get_frame_at_index(10); %125 to work
+    [frame,depth,color] = frame.get_frame_at_index(100); %125 to work
 
     grayImg = rgb2gray(color); % For color image
+    imshowpair(color, depth, "montage");
 
 
 catch error

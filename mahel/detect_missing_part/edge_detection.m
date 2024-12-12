@@ -17,7 +17,7 @@ plotAllResults = 1;
 try
     frame = getFrames(targetPath,"mahelv2"); % The frames will be obtained using the camera and mahel file format
     frame = frame.init(); % Initialize the frame class
-    [frame,depth,color] = frame.get_frame_at_index(25);
+    [frame,depth,color] = frame.get_frame_at_index(120);
 
     [originalHeight, originalWidth, ~] = size(color);
     imgCropped = imcrop(color,[0 180 originalWidth 140]);

@@ -33,11 +33,11 @@ try
 
     [H,T,R]=hough(edges);
 
-    P  = houghpeaks(H,2,'threshold',ceil(0.5*max(H(:))));
+    P  = houghpeaks(H,10,'threshold',ceil(0.5*max(H(:))));
     %numPeaks (after H): Maximum number of peaks to detect
     %ceil(xx*max...): Minimum value to be considered a peak
 
-    lines = houghlines(edges,T,R,P,'FillGap',5,'MinLength',3);
+    lines = houghlines(edges,T,R,P,'FillGap',50,'MinLength',3);
     %fillGap: Distance between 2 lines to be considered a single line
     % minLength: minimum length for the line to be accepted
 

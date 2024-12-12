@@ -32,27 +32,5 @@ The camera shows correctly the distance changing due to the round nature of the 
 
 </details>
 
-## depth_stream_video
-This code streams from the camera in both depth and rgb image and shows them in a montage. 
-It allows a better visualization of both what the depth camera sees and what the rgb camera sees.
-Note that the RGB data is reshaped to correspond to the sizes of the depth image, and would in reality be much more detailed.
-
-<details>
-
-<summary>USAGE EXAMPLE</summary>
-
-Upon executing the code: 
-<div align="center">
-    <img height="60%" width="60%" alt="Image from matlab" src="https://github.com/user-attachments/assets/13007c43-b9ab-47bf-830e-bacdeffab289">
-</div>
-As it can be seen in the previous picture, the data from the RGB and depth sensor is shown in a montage. 
-This is particularly useful to observe the difference of vision between the depth and rgb sensor. 
-
-</details>
-
-
 ## select_2_pixel.m
 This code allows to calculate a distance using the depth camera between 2 points, selecting them on the plot.
-
-> [!NOTE]
-> This code will now be updated [here](/../main/jan/select_2_pixels.m)

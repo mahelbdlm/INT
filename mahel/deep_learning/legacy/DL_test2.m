@@ -1,8 +1,12 @@
-% DL algorithm and double rectangle detection
+% Very much based on Jan's detectEdge script
+% Last modification: 23/11/2024
 
-if(~canUseGPU())
-    error("Your computer must have an NVIDIA GPU in order to execute the DL algorithms.");
-end
+%THIS CODE IS STILL IN DEVELOPPMENT. IT IS NOT 100% FUNCTIONAL AND IS USED
+%TO RUN SOME TESTS
+imagesv1Exist=0;
+
+
+
 
 % clear;
 close all;
@@ -18,17 +22,17 @@ try
         tic;
         frame = getFrames(targetPath,"mahelv3"); % The frames will be obtained using the camera and mahel file format
         frame = frame.init(); % Initialize the frame class
-        [frame,depth,color] = frame.get_frame_at_index(28);
+        [frame,depth,color] = frame.get_frame_at_index(10);
         
-        imshow(color);
-        return;
+        % imshow(color);
+        % return;
     
     
         grayImg = rgb2gray(color); % For color image
         % [originalHeight, originalWidth, ~] = size(grayImg);
         % grayImg = imcrop(grayImg,[0 180 originalWidth 140]);
     
-        [BW,maskedImage] = segmentImage_GPU_v1(color);
+        [BW,maskedImage] = segmentImage_eu6_fr10(color);
     
         % grayImgRight = imcrop(maskedImage,[340.5 349.5 235 86]);
         % edgesRight = edge(maskedImageV2, 'canny');
@@ -38,9 +42,10 @@ try
         disp(['Elapsed Time: ', num2str(elapsedTime), ' seconds']);
     end
 
+
     % S = regionprops(maskedImage,'BoundingBox','Area');
 
-    maskedCropped_layer1 = struct();
+    maskedCropped = struct();
     info = regionprops(BW,'Boundingbox') ;
     figure(1);
     imshow(BW)
@@ -55,17 +60,17 @@ try
          if(perim>500)
              %[BB(1),BB(2),BB(3),BB(4)] x, y, width, height
              rectangle('Position', [BB(1),BB(2),BB(3),BB(4)],'EdgeColor','r','LineWidth',2);
-             maskedCropped_layer1(i).img = imcrop(BW,BB);
-             maskedCropped_layer1(i).x = BB(1);
-             maskedCropped_layer1(i).y = BB(2);
-             maskedCropped_layer1(i).w = BB(3);
-             maskedCropped_layer1(i).h = BB(4);
+             maskedCropped(i).img = imcrop(BW,BB);
+             maskedCropped(i).x = BB(1);
+             maskedCropped(i).y = BB(2);
+             maskedCropped(i).w = BB(3);
+             maskedCropped(i).h = BB(4);
              i=i+1;
          end
     end
 
 
-    nbParts = length(maskedCropped_layer1);
+    nbParts = length(maskedCropped);
     if(nbParts~=2)
         error("An error occured... More than 2 bounding boxes have been found.\n");
     end
@@ -74,63 +79,87 @@ try
 
     % nbParts = 1;
 
-    % 
+
     figure(10);imshow(color);
-    for k=1:nbParts
-        fprintf("k: %d\n", k);
-        edges = bwmorph(maskedCropped_layer1(k).img,'remove');
-        % info = regionprops(edges,'Boundingbox') ;
-        info = regionprops(edges, 'BoundingBox', 'Extent', 'Area', 'Orientation', 'ConvexHull');
+    for k=2:nbParts
+        fprintf("k: %d", k);
 
+        edges = bwmorph(maskedCropped(k).img,'remove');
+        % cleanImage = bwareaopen(BW2, 50); % Adjust size threshold as needed
+
+
+        % edges = edge(maskedCropped(k).img, 'canny');
+        [H,T,R]=hough(edges);
+        P  = houghpeaks(H,3,'threshold',ceil(0.5*max(H(:))));
+        % linesEdges = houghlines(edges,T,R,P,'FillGap',60,'MinLength',3);
+        linesEdges = houghlines(edges,T,R,P,'FillGap',60,'MinLength',3);
         figure(k+1);
-        imshow(edges)
-        hold on
-        i=1;
-        for n = 1 : length(info)
-             BB = round(info(n).BoundingBox);
-             perim = 2*(BB(3)+BB(4));
-    
-             fprintf("P2: %d\n", perim);
-    
-             if(perim>300 && perim < 600)
-                %[BB(1),BB(2),BB(3),BB(4)] x, y, width, height
-                figure(k+1);
-                rectangle('Position', [BB(1),BB(2),BB(3),BB(4)],'EdgeColor','r','LineWidth',2);
-                % maskedCropped_layer1(i).img = imcrop(BW,BB);
-                % maskedCropped_layer1(i).x = BB(1);
-                % maskedCropped_layer1(i).y = BB(2);
-                % maskedCropped_layer1(i).w = BB(3);
-                % maskedCropped_layer1(i).h = BB(4);
-                i=i+1;
-
-                figure(10); hold on;
-                point1 = [BB(1)+maskedCropped_layer1(k).x BB(2)+maskedCropped_layer1(k).y];
-                point2 = [BB(1)+BB(3)+maskedCropped_layer1(k).x BB(2)+BB(4)+maskedCropped_layer1(k).y];
-
-                dist1 = frame.getDepth(depth, point1);
-                dist2 = frame.getDepth(depth, point2);
-    
-                % Plot the line
-                plot([point1(1) point2(1)], [point1(2) point2(2)], 'LineWidth', 2, 'Color', 'green');
-    
-                % Plot the point 1 with text
-                plot(point1(1), point1(2), 'ro', 'MarkerSize', 10);  % Red point for selected point
-                distance_text = sprintf('%.2f m', dist1);  % Format the distance as a string
-                text(point1(1) + 10, point1(2) + 10, distance_text, 'Color', 'red', 'FontSize', 12, 'FontWeight', 'bold', 'VerticalAlignment', 'bottom');
-    
-                % Plot the point 1 with text
-                plot(point2(1), point2(2), 'ro', 'MarkerSize', 10);  % Red point for selected point
-                distance_text = sprintf('%.2f m', dist2);  % Format the distance as a string
-                text(point2(1) + 10, point2(2) + 10, distance_text, 'Color', 'red', 'FontSize', 12, 'FontWeight', 'bold', 'VerticalAlignment', 'bottom');
-    
-                point_3D_1 = frame.distance.deproject_pixel_to_point(point1, dist1);
-                point_3D_2 = frame.distance.deproject_pixel_to_point(point2, dist2);
-    
-                dist = frame.distance.getDistance(point_3D_1, point_3D_2);
-                fprintf("Distance: %.3f\n", dist);
-
-             end
+        lineLengths = distanceHoughLines(edges, linesEdges);
+        numLines = length(lineLengths);
+        similarPairs = [];
+        for i = 1:numLines
+            for j = i+1:numLines
+                if abs(lineLengths(i) - lineLengths(j)) <= 30; %Max length diff is 5
+                    similarPairs = [similarPairs; i, j];
+                end
+            end
         end
+        return;
+
+        figure(10); hold on;
+    
+        % Initialize the array to store line lengths
+        lineLengths = zeros(1, length(lineLengths));
+        max_len = 0;
+
+        for m=1:length(similarPairs)
+            linesEdges(similarPairs(m)).point1 = linesEdges(similarPairs(m)).point1 + [maskedCropped(k).x, (maskedCropped(k).y)];
+            linesEdges(similarPairs(m)).point2 = linesEdges(similarPairs(m)).point2 + [maskedCropped(k).x, (maskedCropped(k).y)];
+        end
+
+        % Plot the points on the color image
+        for m = 1:length(similarPairs) 
+            % Calculate the distances
+            dist1 = frame.getDepth(depth, linesEdges(similarPairs(m)).point1);
+            dist2 = frame.getDepth(depth, linesEdges(similarPairs(m)).point2);
+
+            % Plot the line
+            plot([linesEdges(similarPairs(m)).point1(1) linesEdges(similarPairs(m)).point2(1)], [linesEdges(similarPairs(m)).point1(2) linesEdges(similarPairs(m)).point2(2)], 'LineWidth', 2, 'Color', 'green');
+            
+
+            % Plot the point 1 with text
+            plot(linesEdges(similarPairs(m)).point1(1), linesEdges(similarPairs(m)).point1(2), 'ro', 'MarkerSize', 10);  % Red point for selected point
+            distance_text = sprintf('%.2f m', dist1);  % Format the distance as a string
+            text(linesEdges(similarPairs(m)).point1(1) + 10, linesEdges(similarPairs(m)).point1(2) + 10, distance_text, 'Color', 'red', 'FontSize', 12, 'FontWeight', 'bold', 'VerticalAlignment', 'bottom');
+
+            % Plot the point 1 with text
+            plot(linesEdges(similarPairs(m)).point2(1), linesEdges(similarPairs(m)).point2(2), 'ro', 'MarkerSize', 10);  % Red point for selected point
+            distance_text = sprintf('%.2f m', dist2);  % Format the distance as a string
+            text(linesEdges(similarPairs(m)).point2(1) + 10, linesEdges(similarPairs(m)).point2(2) + 10, distance_text, 'Color', 'red', 'FontSize', 12, 'FontWeight', 'bold', 'VerticalAlignment', 'bottom');
+
+            point_3D_1 = frame.distance.deproject_pixel_to_point(linesEdges(similarPairs(1)).point1, dist1);
+            point_3D_2 = frame.distance.deproject_pixel_to_point(linesEdges(similarPairs(1)).point2, dist2);
+
+            dist = frame.distance.getDistance(point_3D_1, point_3D_2);
+            fprintf("Distance: %.3f\n", dist);
+            
+        end
+
+        % dist_u1 = frame.getDepth(depth, linesEdges(similarPairs(1)).point1 + [maskedCropped(k).x, maskedCropped(k).y]);
+        % dist_v1 = frame.getDepth(depth, linesEdges(similarPairs(1)).point2 + [maskedCropped(k).x, maskedCropped(k).y]);
+        % 
+        % dist_u2 = frame.getDepth(depth, linesEdges(similarPairs(2)).point1 + [maskedCropped(k).x, maskedCropped(k).y]);
+        % dist_v2 = frame.getDepth(depth, linesEdges(similarPairs(2)).point2 + [maskedCropped(k).x, maskedCropped(k).y]);
+        % 
+        % point_3D_u1 = frame.distance.deproject_pixel_to_point(linesEdges(similarPairs(1)).point1+[maskedCropped(k).x, maskedCropped(k).y], dist_u1);
+        % point_3D_v1 = frame.distance.deproject_pixel_to_point(linesEdges(similarPairs(1)).point2+[maskedCropped(k).x, maskedCropped(k).y], dist_v1);
+        % 
+        % point_3D_u2 = frame.distance.deproject_pixel_to_point(linesEdges(similarPairs(2)).point1+[maskedCropped(k).x, maskedCropped(k).y], dist_u2);
+        % point_3D_v2 = frame.distance.deproject_pixel_to_point(linesEdges(similarPairs(2)).point2+[maskedCropped(k).x, maskedCropped(k).y], dist_v2);
+        % 
+        % dist_1 = frame.distance.getDistance(point_3D_u1, point_3D_v1);
+        % dist_2 = frame.distance.getDistance(point_3D_u2, point_3D_v2);
+        % fprintf("Distance: %.3f or %.3f\n", dist_1, dist_2);
     end
 
 

@@ -73,6 +73,10 @@ classdef distanceClass
         %     pixel = [x * fx + ppx, y * fy + ppy];
         % end
 
+        function distanceClass = set_correction_constant(distanceClass, correction_constant)
+           distanceClass.correctionConstant = correction_constant;
+        end
+
         function distance = getDistance(distanceClass, upoint_3D, vpoint_3D)
             % INPUT: upoint_3D, vpoint_3D
             % OUTPUT: the distance between the two 3D points
