@@ -27,7 +27,7 @@ Legend:
 | :white_check_mark:| ```detect_missing_part/ideal_img/detect_ideal_palet``` |  |
 | :movie_camera: | ```detect_missing_part/missing_splinter1``` | Format: mahelv2 | 
 | :movie_camera: | ```detect_missing_part/missing_splinter2``` | Format: mahelv2 | 
-| :recycle:| ```detect_missing_part/edge_detection``` |  |   
+| :asterisk:| ```detect_missing_part/edge_detection``` |  |   
 | :recycle: |  ```research/``` |  |
 | :white_check_mark: |  ```save/depth_stream_video2``` |  |
 | :white_check_mark: |  ```save/load_image``` |  |
