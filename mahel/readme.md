@@ -21,8 +21,8 @@ Legend:
 | :white_check_mark: | ```calibration/manual_calib.m``` | Prompts user to select two points on an image and calculates the distance between the two points. Using the getFrames class, this code can be used with the real-time camera and with saved frames |
 | :white_check_mark: | ```measure/measure_dist_pixel``` | Allows to measure the distance between two pixels, converting the selected points to 3D points |   
 | :recycle: |  ```measure/select_2_pixels``` |  |
-| :asterisk: | ```deep_learning/selected_frames/DL_demo_OK``` |  |
-| :asterisk: | ```deep_learning/selected_frames/DL_demo_NO``` |  |
+| :asterisk: | ```deep_learning/selected_frames/DL_demo_OK``` | Uses the segmentAnything model to separate the pallet from the background and applies two bondingBox detections. Specific for the frame with the good part of the pallet. |
+| :asterisk: | ```deep_learning/selected_frames/DL_demo_NO``` | Uses the segmentAnything model to separate the pallet from the background and applies two bondingBox detections. Specific for the frame with the palet missing a part. |
 | :x: | ```deep_learning/DL``` |  |
 | :white_check_mark:| ```detect_missing_part/ideal_img/detect_ideal_palet``` |  |
 | :movie_camera: | ```detect_missing_part/missing_splinter1``` | Format: mahelv2 | 
