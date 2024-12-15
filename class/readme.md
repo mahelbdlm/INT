@@ -67,48 +67,6 @@ This format only saves the depth aligned to color and color frames. It also stor
 
 </details>
 
-<details>
-
-<summary>EXAMPLE CODE WITH CAMERA</summary>
-
-```matlab
-frame = getFrames(); % Create frame to use camera
-frame = frame.init(); % Calling the init function is mandatory
-
-while (frame.isActive)
-   % Wait for a new frame set
-   disp("Getting frame");
-
-   [frame,depth,color] = frame.get_frame_aligned(); % Get the frame
-
-   imshowpair(depth,color);
-end
-```
-Switching from camera to file is as easy as replacing ```frame = getFrames();``` to ```frame = getFrames("mahel/save/palet_con_rodillos4");```
-
-</details>
-
-<details>
-
-<summary>EXAMPLE CODE WITH FILE</summary>
-
-```matlab
-targetPath = "mahel/save/palet_con_rodillos4";
-frame = getFrames(targetPath, "mahelv2"); %Create frame to use file at path
-frame = frame.init(); % Calling the init function is mandatory
-
-while (frame.isActive)
-   % Wait for a new frame set
-   disp("Getting frame");
-
-   [frame,depth,color] = frame.get_frame_aligned(); % Get the frame
-
-   imshowpair(depth,color);
-end
-```
-Switching from file to camera is as easy as replacing ```frame = getFrames("mahel/save/palet_con_rodillos4", "mahelv2");``` to ```frame = getFrames();```
-
-</details>
 
 ## CameraParams
 This class is used to store camera parameters, such as intrinsics and the depth scale. 
