@@ -1,12 +1,13 @@
+> [!CAUTION]
+> This project has reached its end of development the 19/12/2024.
+
+
 # WHAT IS THE PROJECT ABOUT?
 Nowadays, the vast majority of transit of goods is done via pallets. They are easy to use, reuse and come in standard sizes. But as they are made of wood and degrade over time, they can be a real threat to warehouses, especially automated ones. 
 That’s why every warehouse is equipped with a PIE (or Product Inspection Entry). Its main purpose is to determine whether the pallet (and merchandise) meets the required conditions in order to be stocked. It is crucial to discard defective pallets, especially in automated warehouses, as they can have huge consequences, from losing merchandise to a total warehouse blockage.
 
 The objective of this project is to detect the defects a palet can have using 3D cameras. 
 To do this, we will use MATLAB and the intel realsense D435i. 
-
-> [!CAUTION]
-> This project has reached its end of development. It will not be updated as of December 12 2024. 
 
 > [!NOTE]
 > Custom classes have been defined in this project (```getFrames```, ```getDistance```,...). Their purpose is to facilitate the transition between frames from the camera and saved frames. This was an approach to standarize the code between each member of the team, and facilitate bulk changes.
@@ -79,11 +80,3 @@ Below is a detail of all the material used in order to mount the prototype:
 | Alum. lateral connection  | 4 | 95.44| [link](https://es.rs-online.com/web/p/componentes-de-conexion/3902000) |
 | LED 5m strip | 1 | 86.89 | [link](https://es.rs-online.com/web/p/tiras-de-led/1533661?searchId=c3c85c20-2f5b-480a-a57e-2065bbc26e84&gb=s) |
 
-To be determined:
-| Element | Units | Price(total) | Reference/link |
-| ------------- | ------------- | ------------- | ------------- |
-| Steper motor | 1 |  |  |
-| Steper motor belt | 1 |  |  |
-| Polea dentada | 1 |  |  |
-
-TODO: Include photos of the prototype.
