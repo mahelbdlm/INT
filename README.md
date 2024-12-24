@@ -1,5 +1,5 @@
 > [!CAUTION]
-> This project has reached its end of development the 19/12/2024.
+> This project reached the end of its development on December 19, 2024.
 
 
 # WHAT IS THE PROJECT ABOUT?
