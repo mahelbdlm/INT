@@ -1,5 +1,5 @@
 > [!CAUTION]
-> This project reached the end of its development on December 19, 2024.
+> This project reached the end of its development on January 21, 2024.
 
 
 # WHAT IS THE PROJECT ABOUT?
@@ -17,12 +17,9 @@ This project will be divided into several parts:
 
 1. Detection of the palet from below
 2. Detection of the palet from a perspective
-3. Palet integrity
+3. 3D point cloud
 
 More information about each section will be provided below. 
-
-> [!WARNING]
-> Due to budget cuts in our project, only two out of three cameras will be available. One will be placed below the palet, and the other on one side.
 
 The cameras used are intel realsense D435i
 
@@ -45,10 +42,8 @@ In this project we will treat the following defects:
 
 ## Detection of the palet from below
 <div align="center">
-    <img height="30%" width="30%" alt="Image" src="https://github.com/user-attachments/assets/39c15630-afaa-466e-b110-62b829ce1f09">
+    <img height="30%" width="30%" alt="Image" src="https://github.com/user-attachments/assets/674588cd-bc12-42d0-ad5e-0a725db13059">
 </div>
-
-[TODO: add more info]
 
 ## Detection of the palet with perspective
 <div align="center">
@@ -64,19 +59,23 @@ More information about these codes can be found [here](mahel/readme.md)
 
 
 # PROTOTYPE
-This code will be used with a physical prototype. 
-Below is a detail of all the material used in order to mount the prototype: 
+Our goal is to update a Product Inspection Entry point which has the following form: 
+<div align="center">
+    <img height="50%" width="50%" alt="Image" src="https://github.com/user-attachments/assets/190d18a3-aba0-4b0e-a054-64c58f7a9ebf">
+</div>
 
-| Element | Units | Price(total) | Reference/link |
-| ------------- | ------------- | ------------- | ------------- |
-| Realsense D435i depth cam | 2 | 668 | [link](https://store.intelrealsense.com/buy-intel-realsense-depth-camera-d435i.html) |
-| Alum. profile 30x30 2m | 5 | 201.45 | [link](https://es.rs-online.com/web/p/tubos-y-perfiles/2647863) |
-| Alum. profile 30x30 1m | 4 | 84.4 | [link](https://es.rs-online.com/web/p/tubos-y-perfiles/2647862?gb=s) |
-| Alum. corner connection | 20 | 160.4 | [link](https://es.rs-online.com/web/p/componentes-de-conexion/3901798?gb=s) |
-| Hammer-head M6 nut | 30 | 23.91 | [link](https://es.rs-online.com/web/p/componentes-de-conexion/2768170?gb=s) |
-| M6 Allen screw 20mm | 50 | 24.49 | [link](https://es.rs-online.com/web/p/tornillos-allen/4839688?gb=a) |
-| 80mm wheels | 5 | 44.15 | [link](https://es.rs-online.com/web/p/ruedas-industriales/6679463?gb=s) |
-| M6 Allen screw 10mm | 20 | 17.92 | [link](https://es.rs-online.com/web/p/tornillos-allen/8741021) |
-| Alum. lateral connection  | 4 | 95.44| [link](https://es.rs-online.com/web/p/componentes-de-conexion/3902000) |
-| LED 5m strip | 1 | 86.89 | [link](https://es.rs-online.com/web/p/tiras-de-led/1533661?searchId=c3c85c20-2f5b-480a-a57e-2065bbc26e84&gb=s) |
+As we cannot have a real life-size model of this structure in our laboratory, we decided to create a functioning prototype, in which the pallet is turned upside down respect to the PIE:
+<div align="center">
+    <img height="50%" width="50%" alt="Image" src="https://github.com/user-attachments/assets/70439c9e-9b7f-4d60-ac62-2dedea2599ce">
+</div>
+
+The pallet is able to move as it is onto a sliding platform:
+<div align="center">
+    <img height="30%" width="30%" alt="Image" src="https://github.com/user-attachments/assets/24c04ff5-bd0d-4030-baeb-154ce2c26b61">
+</div>
+
+And the cameras are mounted in the top of the prototipe, at a respective angle of 45º
+<div align="center">
+    <img height="30%" width="30%" alt="Image" src="https://github.com/user-attachments/assets/b329d5b4-302a-4db4-8844-2229e4813a09">
+</div>
 
