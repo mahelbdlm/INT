@@ -45,6 +45,8 @@ In this project we will treat the following defects:
     <img height="30%" width="30%" alt="Image" src="https://github.com/user-attachments/assets/674588cd-bc12-42d0-ad5e-0a725db13059">
 </div>
 
+More information can be found on the _palet_below_ folder.
+
 ## Detection of the palet with perspective
 <div align="center">
     <img height="60%" width="60%" alt="Image" src="https://github.com/user-attachments/assets/5f1875cf-8dd7-4075-9e44-e8ceb45cc67f">
@@ -54,8 +56,6 @@ One camera will capture the palet using this angle. This will help us identify t
 1. Incorrect sizes
    - Detecting the squares of the palet, we can identify the palet sizes
 2. Missing panel
-
-More information about these codes can be found [here](mahel/readme.md)
 
 
 # PROTOTYPE
