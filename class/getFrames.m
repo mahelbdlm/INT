@@ -290,13 +290,6 @@ classdef getFrames
 
         end
 
-        % function colorizedDepth = get_depth_colorized(frame, depthFrame)
-        %      if(frame.type=="camera")
-        %          colorizedDepth = permute(reshape(depthFrame.get_data()', [3, depthFrame.get_width(), depthFrame.get_height()]), [3, 2, 1]);
-        %      else
-        %      end
-        % end
-
         function [frame,depth,color] = get_frame_aligned(frame)
             % Get frame aligned to color
             if(frame.type=="camera")
@@ -305,24 +298,8 @@ classdef getFrames
                 align_to_color = realsense.align(realsense.stream.color);
                 aligned_color_frames = align_to_color.process(frames_camera);
                 depth_frame = aligned_color_frames.get_depth_frame();
-                %depthFrame = depth_frame.as('depth_frame');
                 color_frame = aligned_color_frames.get_color_frame();
-
-
-                % if(class(frame.intelFilters)=="intelFilter")
-                %     % Apply filters
-                %     depth = frame.intelFilters.decimation.process(depth_frame);
-                %     disparity_frame = frame.intelFilters.depth2disparity.process(depth);
-                %     depth = frame.intelFilters.spatial.process(disparity_frame);
-                %     depth = frame.intelFilters.temporal.process(depth);
-                %     depth = frame.intelFilters.disparity2depth.process(depth);
-                %     depth = frame.colorizer.colorize(depth);
-                %     depthColorized = permute(reshape(depth.get_data()', [3, depth.get_width(), depth.get_height()]), [3, 2, 1]);
-                % else
-                %     depth_h = depth_frame.get_height();
-                %     depth_w = depth_frame.get_width();
-                %     depthColorized = permute(reshape(frame.colorizer.colorize(depth_frame).get_data()', [3, depth_w, depth_h]), [3, 2, 1]);
-                % end
+             
                 depth = squeeze(permute(reshape(depth_frame.get_data()', [[], depth_frame.get_width(), depth_frame.get_height()]), [3,2,1]));
                 color_w=color_frame.get_width();
                 color_h=color_frame.get_height();
@@ -348,15 +325,5 @@ classdef getFrames
                 frame.cameraPipeline.stop();
             end
         end
-    end
-
-    methods (Static)
-        % function obj = createObj
-        %    prompt = {'Enter the Radius'};
-        %    dlgTitle = 'Radius';
-        %    rad = inputdlg(prompt,dlgTitle);
-        %    r = str2double(rad{:});
-        %    obj = CircleArea(r);
-        % end
     end
 end
